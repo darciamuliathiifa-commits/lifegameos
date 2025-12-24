@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Calendar, CheckSquare, Book, Dumbbell, Utensils, ChevronLeft, ChevronRight, Plus, Play, Music, MoreHorizontal, CalendarDays, RotateCcw, PenLine, UtensilsCrossed, Plane, Target, Eye, Heart, BookOpen, Clapperboard, Wallet } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CheckSquare, Plus, Sparkles } from 'lucide-react';
 import { Quest, Habit, Goal, Stats, UserProfile } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -7,6 +7,11 @@ import { cn } from '@/lib/utils';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
 import { PrayerTimesWidget } from '@/components/prayers/PrayerTimesWidget';
 import { CalendarWithNotes } from '@/components/calendar/CalendarWithNotes';
+import { 
+  IconCalendar, IconHabits, IconJournal, IconMeal, IconTravel, IconWorkout,
+  IconBook, IconMovie, IconWallet, IconTarget, IconVision, IconHeart,
+  IconPlanner, IconCheck, IconSun, IconMoon
+} from '@/components/icons/CleanIcons';
 
 interface LifePlannerDashboardProps {
   stats: Stats;
@@ -19,63 +24,86 @@ interface LifePlannerDashboardProps {
   onNavigate: (tab: string) => void;
 }
 
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return { text: 'Good Morning', emoji: '☀️', Icon: IconSun };
+  if (hour >= 12 && hour < 17) return { text: 'Good Afternoon', emoji: '🌤️', Icon: IconSun };
+  if (hour >= 17 && hour < 21) return { text: 'Good Evening', emoji: '🌅', Icon: IconMoon };
+  return { text: 'Good Night', emoji: '🌙', Icon: IconMoon };
+};
+
+const motivationalQuotes = [
+  "Every day is a new beginning. Take a deep breath and start again.",
+  "Your only limit is your mind. Dream big, work hard.",
+  "Today is the perfect day to start something new.",
+  "Small steps every day lead to big changes.",
+  "Believe in yourself and all that you are.",
+  "The secret of getting ahead is getting started.",
+  "Make today so awesome that yesterday gets jealous.",
+  "You are capable of amazing things.",
+];
+
 const categoryCards = [
   { 
     id: 'daily', 
     title: 'Daily', 
-    icon: CalendarDays,
+    Icon: IconCalendar,
     items: [
-      { name: 'Planner', icon: CalendarDays },
-      { name: 'Habits', icon: RotateCcw },
-      { name: 'Journal', icon: PenLine }
+      { name: 'Planner', Icon: IconPlanner },
+      { name: 'Habits', Icon: IconHabits },
+      { name: 'Journal', Icon: IconJournal }
     ],
     tab: 'quests',
-    color: 'primary'
+    gradient: 'from-blue-500/20 to-cyan-500/20',
+    borderColor: 'border-blue-500/30'
   },
   { 
     id: 'planners', 
     title: 'Planners', 
-    icon: UtensilsCrossed,
+    Icon: IconMeal,
     items: [
-      { name: 'Meal Planner', icon: UtensilsCrossed },
-      { name: 'Travel Planner', icon: Plane },
-      { name: 'Workout Planner', icon: Dumbbell }
+      { name: 'Meal Planner', Icon: IconMeal },
+      { name: 'Travel Planner', Icon: IconTravel },
+      { name: 'Workout Planner', Icon: IconWorkout }
     ],
     tab: 'habits',
-    color: 'secondary'
+    gradient: 'from-orange-500/20 to-amber-500/20',
+    borderColor: 'border-orange-500/30'
   },
   { 
     id: 'personal', 
     title: 'Personal', 
-    icon: BookOpen,
+    Icon: IconBook,
     items: [
-      { name: 'Bookshelf', icon: BookOpen },
-      { name: 'Movies & Series', icon: Clapperboard },
-      { name: 'Finance', icon: Wallet }
+      { name: 'Bookshelf', Icon: IconBook },
+      { name: 'Movies & Series', Icon: IconMovie },
+      { name: 'Finance', Icon: IconWallet }
     ],
     tab: 'goals',
-    color: 'accent'
+    gradient: 'from-purple-500/20 to-pink-500/20',
+    borderColor: 'border-purple-500/30'
   },
   { 
     id: 'goals', 
     title: 'Goals', 
-    icon: Target,
+    Icon: IconTarget,
     items: [
-      { name: 'Goals', icon: Target },
-      { name: 'Vision', icon: Eye },
-      { name: 'Health', icon: Heart }
+      { name: 'Goals', Icon: IconTarget },
+      { name: 'Vision', Icon: IconVision },
+      { name: 'Health', Icon: IconHeart }
     ],
     tab: 'goals',
-    color: 'destructive'
+    gradient: 'from-emerald-500/20 to-teal-500/20',
+    borderColor: 'border-emerald-500/30'
   },
 ];
 
 const overviewTabs = [
-  { name: 'Todo', icon: CheckSquare },
+  { name: 'Todo', Icon: IconCheck },
   { name: 'Journal', emoji: '✍️' },
   { name: 'Habits', emoji: '🔄' },
-  { name: 'Workout', icon: Dumbbell },
-  { name: 'Meal', icon: Utensils },
+  { name: 'Workout', Icon: IconWorkout },
+  { name: 'Meal', Icon: IconMeal },
 ];
 
 export const LifePlannerDashboard = ({
@@ -89,33 +117,17 @@ export const LifePlannerDashboard = ({
   onNavigate,
 }: LifePlannerDashboardProps) => {
   const [activeOverviewTab, setActiveOverviewTab] = useState('Todo');
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [greeting] = useState(getGreeting());
+  const [quote] = useState(motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const activeQuests = quests.filter(q => !q.completed);
   const upcomingTasks = [...quests.filter(q => !q.completed)].slice(0, 6);
-
-  // Generate calendar days
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const days = [];
-    
-    const startPadding = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-    for (let i = 0; i < startPadding; i++) {
-      days.push(null);
-    }
-    
-    for (let i = 1; i <= lastDay.getDate(); i++) {
-      days.push(i);
-    }
-    
-    return days;
-  };
-
-  const calendarDays = getDaysInMonth(currentMonth);
-  const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   const getCategoryStyle = (category: string) => {
     switch(category) {
@@ -135,16 +147,45 @@ export const LifePlannerDashboard = ({
   };
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      {/* Title Section */}
-      <div className="mb-2">
-        <h1 className="text-2xl md:text-3xl font-display text-foreground tracking-wide">Life Planner</h1>
-        <p className="text-muted-foreground font-body text-sm mt-1">
-          All your thoughts in one private place.
-        </p>
+    <div className="space-y-8 animate-slide-up">
+      {/* Hero Welcome Section */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 border border-primary/20 p-6 md:p-8">
+        {/* Background glow effects */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/20 rounded-full blur-3xl" />
+        
+        <div className="relative z-10">
+          {/* Time & Greeting */}
+          <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 mb-6">
+            <div className="text-5xl md:text-7xl font-display text-primary text-glow tabular-nums tracking-tight">
+              {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+            </div>
+            <div className="h-px md:h-16 md:w-px bg-gradient-to-r md:bg-gradient-to-b from-transparent via-primary/50 to-transparent" />
+            <div>
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{greeting.emoji}</span>
+                <h1 className="text-2xl md:text-3xl font-display text-foreground">{greeting.text}!</h1>
+              </div>
+              <p className="text-muted-foreground font-body mt-1">
+                {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+              </p>
+            </div>
+          </div>
+
+          {/* Motivational Quote */}
+          <div className="relative">
+            <div className="absolute -left-2 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-secondary to-accent rounded-full" />
+            <div className="pl-4 flex items-start gap-2">
+              <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5 animate-pulse" />
+              <p className="text-base md:text-lg font-body text-foreground/80 leading-relaxed italic">
+                "{quote}"
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Category Cards - Icon Based Clean Layout */}
+      {/* Category Cards - Icon Based Clean Layout with Gradients */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {categoryCards.map((card, index) => (
           <button
@@ -152,18 +193,20 @@ export const LifePlannerDashboard = ({
             onClick={() => onNavigate(card.tab)}
             className={cn(
               "group p-5 rounded-xl transition-all duration-300 animate-slide-up",
-              "bg-card/60 backdrop-blur-sm border border-border/50",
-              "hover:bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5",
+              "bg-gradient-to-br backdrop-blur-sm border",
+              card.gradient,
+              card.borderColor,
+              "hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02]",
               "flex flex-col items-center gap-3"
             )}
             style={{ animationDelay: `${index * 50}ms` }}
           >
             <div className={cn(
-              "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300",
-              "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground",
-              "group-hover:scale-110"
+              "w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300",
+              "bg-background/50 group-hover:bg-primary group-hover:text-primary-foreground",
+              "group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30"
             )}>
-              <card.icon className="w-6 h-6" />
+              <card.Icon className="w-7 h-7 text-primary group-hover:text-primary-foreground" />
             </div>
             <h3 className="font-display text-base text-foreground">
               {card.title}
@@ -172,7 +215,7 @@ export const LifePlannerDashboard = ({
         ))}
       </div>
 
-      {/* Category Items - Compact List */}
+      {/* Category Items - Compact List with Clean Icons */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {categoryCards.map((card) => (
           <div key={`items-${card.id}`} className="space-y-1">
@@ -180,9 +223,9 @@ export const LifePlannerDashboard = ({
               <button 
                 key={item.name}
                 onClick={() => onNavigate(card.tab)}
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-body text-sm group w-full py-1"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-body text-sm group w-full py-1.5"
               >
-                <item.icon className="w-3.5 h-3.5 text-primary/60 group-hover:text-primary transition-colors" />
+                <item.Icon className="w-4 h-4 text-primary/60 group-hover:text-primary transition-colors" size={16} />
                 <span className="group-hover:translate-x-0.5 transition-transform">{item.name}</span>
               </button>
             ))}
@@ -194,7 +237,9 @@ export const LifePlannerDashboard = ({
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Todo List */}
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="font-display text-xl text-foreground">— Overview</h2>
+          <h2 className="font-display text-xl text-foreground flex items-center gap-2">
+            <span className="text-primary">—</span> Overview
+          </h2>
 
           {/* Tabs */}
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -205,11 +250,11 @@ export const LifePlannerDashboard = ({
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-sm font-body flex items-center gap-1.5 transition-all duration-200",
                   activeOverviewTab === tab.name
-                    ? "bg-muted/80 text-foreground ring-1 ring-border"
+                    ? "bg-primary/20 text-primary ring-1 ring-primary/30"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                 )}
               >
-                {tab.icon && <tab.icon className="w-3.5 h-3.5" />}
+                {tab.Icon && <tab.Icon className="w-3.5 h-3.5" size={14} />}
                 {tab.emoji && <span className="text-xs">{tab.emoji}</span>}
                 {tab.name}
               </button>
@@ -230,7 +275,7 @@ export const LifePlannerDashboard = ({
                 </tr>
               </thead>
               <tbody>
-                {activeQuests.slice(0, 8).map((quest, index) => {
+                {activeQuests.slice(0, 8).map((quest) => {
                   const style = getCategoryStyle(quest.category);
                   return (
                     <tr 
@@ -278,7 +323,9 @@ export const LifePlannerDashboard = ({
 
         {/* Play Now & Prayer Times */}
         <div className="space-y-4">
-          <h3 className="font-display text-xl text-foreground">— Play Now</h3>
+          <h3 className="font-display text-xl text-foreground flex items-center gap-2">
+            <span className="text-primary">—</span> Play Now
+          </h3>
           <MusicPlayer compact />
           <PrayerTimesWidget />
         </div>
@@ -288,15 +335,19 @@ export const LifePlannerDashboard = ({
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Calendar with Notes Sync */}
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="font-display text-xl text-foreground">— Calendar</h2>
+          <h2 className="font-display text-xl text-foreground flex items-center gap-2">
+            <span className="text-primary">—</span> Calendar
+          </h2>
           <CalendarWithNotes />
         </div>
 
         {/* Upcoming */}
         <div className="space-y-4">
-          <h3 className="font-display text-xl text-foreground">— Upcoming</h3>
+          <h3 className="font-display text-xl text-foreground flex items-center gap-2">
+            <span className="text-primary">—</span> Upcoming
+          </h3>
           
-          <div className="space-y-5">
+          <div className="space-y-5 card-gaming rounded-xl p-4 border border-border/50">
             <div>
               <p className="text-xs text-muted-foreground/80 font-body mb-2.5 flex items-center gap-1">
                 <span className="text-primary">▼</span> Today {new Date().getDate()}
