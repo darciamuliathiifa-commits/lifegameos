@@ -1,4 +1,4 @@
-import { Home, Target, Zap, Trophy, User, Settings, Flame, FileText, Wallet, Package, Moon, Brain, Music, Menu, X } from 'lucide-react';
+import { Home, Target, Zap, Trophy, User, Settings, Flame, FileText, Wallet, Package, Moon, Brain, Music, Menu, X, Timer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
@@ -19,6 +19,7 @@ const navItems = [
   { id: 'inventory', label: 'Inventory', icon: Package, emoji: '📦' },
   { id: 'prayers', label: 'Doa Harian', icon: Moon, emoji: '🌙' },
   { id: 'music', label: 'Music', icon: Music, emoji: '🎵' },
+  { id: 'pomodoro', label: 'Pomodoro', icon: Timer, emoji: '🍅' },
   { id: 'profile', label: 'Profile', icon: User, emoji: '👤' },
 ];
 
