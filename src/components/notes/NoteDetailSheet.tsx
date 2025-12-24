@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Pin, Trash2, Calendar, Tag, Save } from 'lucide-react';
+import { Pin, Trash2, Calendar, Tag, Save, Eye, Edit3 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface Note {
   id: string;
@@ -40,12 +41,14 @@ export const NoteDetailSheet = ({
   const [content, setContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   useEffect(() => {
     if (note) {
       setTitle(note.title);
       setContent(note.content || '');
       setHasChanges(false);
+      setIsPreviewMode(false);
     }
   }, [note]);
 
@@ -140,7 +143,7 @@ export const NoteDetailSheet = ({
         </SheetHeader>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 py-4 border-b border-border">
+        <div className="flex items-center gap-2 py-4 border-b border-border flex-wrap">
           <Button 
             variant="outline" 
             size="sm" 
@@ -149,7 +152,16 @@ export const NoteDetailSheet = ({
             className={cn("gap-2", hasChanges && "bg-primary/20 text-primary border-primary/30")}
           >
             <Save className="w-4 h-4" />
-            {isSaving ? 'Saving...' : hasChanges ? 'Save' : 'Saved'}
+            {isSaving ? 'Menyimpan...' : hasChanges ? 'Simpan' : 'Tersimpan'}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setIsPreviewMode(!isPreviewMode)}
+            className={cn("gap-2", isPreviewMode && "bg-primary/20 text-primary border-primary/30")}
+          >
+            {isPreviewMode ? <Edit3 className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {isPreviewMode ? 'Edit' : 'Preview'}
           </Button>
           <Button 
             variant="outline" 
@@ -158,7 +170,7 @@ export const NoteDetailSheet = ({
             className={cn("gap-2", note.is_pinned && "bg-accent/20 text-accent border-accent/30")}
           >
             <Pin className={cn("w-4 h-4", note.is_pinned && "fill-current")} />
-            {note.is_pinned ? 'Unpin' : 'Pin'}
+            {note.is_pinned ? 'Lepas Pin' : 'Pin'}
           </Button>
           <Button 
             variant="outline" 
@@ -169,18 +181,31 @@ export const NoteDetailSheet = ({
             }} 
             className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
           >
-            <Trash2 className="w-4 h-4" /> Delete
+            <Trash2 className="w-4 h-4" /> Hapus
           </Button>
         </div>
 
-        {/* Editable Content */}
-        <div className="py-6">
-          <Textarea
-            value={content}
-            onChange={(e) => handleContentChange(e.target.value)}
-            placeholder="Start writing your note... (Markdown supported)"
-            className="min-h-[400px] font-mono text-sm border-none focus-visible:ring-0 bg-transparent resize-none"
-          />
+        {/* Markdown Tips */}
+        {!isPreviewMode && (
+          <div className="py-2 px-3 bg-muted/50 rounded-lg text-xs text-muted-foreground">
+            <span className="font-semibold">Tips Markdown:</span> # Heading 1, ## Heading 2, **bold**, *italic*, - list, `code`
+          </div>
+        )}
+
+        {/* Content Area */}
+        <div className="py-4">
+          {isPreviewMode ? (
+            <div className="min-h-[400px] p-4 bg-muted/20 rounded-lg">
+              <MarkdownRenderer content={content} />
+            </div>
+          ) : (
+            <Textarea
+              value={content}
+              onChange={(e) => handleContentChange(e.target.value)}
+              placeholder="Mulai menulis catatan... (Markdown didukung: # Heading, **bold**, *italic*, dll)"
+              className="min-h-[400px] font-mono text-sm border-none focus-visible:ring-0 bg-transparent resize-none"
+            />
+          )}
         </div>
       </SheetContent>
     </Sheet>

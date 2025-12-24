@@ -7,20 +7,37 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ImageUpload } from '@/components/shared/ImageUpload';
 import { Label } from '@/components/ui/label';
 
+export type RepeatFrequency = 'daily' | 'weekly' | 'monthly';
+
 interface AddHabitDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAdd: (habit: Omit<Habit, 'id' | 'streak' | 'completedToday'>) => void;
+  onAdd: (habit: Omit<Habit, 'id' | 'streak' | 'completedToday'> & { repeatFrequency: RepeatFrequency }) => void;
 }
 
 const categories: Category[] = ['health', 'productivity', 'social', 'learning', 'creative'];
 const icons = ['💪', '🧘', '📚', '💧', '🏃', '🎨', '💻', '📝', '🎵', '🌱', '⭐', '🎯'];
+
+const categoryLabels: Record<Category, string> = {
+  health: 'Kesehatan',
+  productivity: 'Produktivitas',
+  social: 'Sosial',
+  learning: 'Pembelajaran',
+  creative: 'Kreativitas',
+};
+
+const frequencyLabels: Record<RepeatFrequency, string> = {
+  daily: 'Setiap Hari',
+  weekly: 'Setiap Minggu',
+  monthly: 'Setiap Bulan',
+};
 
 export const AddHabitDialog = ({ open, onOpenChange, onAdd }: AddHabitDialogProps) => {
   const [name, setName] = useState('');
   const [icon, setIcon] = useState('💪');
   const [category, setCategory] = useState<Category>('health');
   const [image, setImage] = useState('');
+  const [repeatFrequency, setRepeatFrequency] = useState<RepeatFrequency>('daily');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +48,7 @@ export const AddHabitDialog = ({ open, onOpenChange, onAdd }: AddHabitDialogProp
       icon,
       category,
       image: image || undefined,
+      repeatFrequency,
     });
 
     // Reset form
@@ -38,6 +56,7 @@ export const AddHabitDialog = ({ open, onOpenChange, onAdd }: AddHabitDialogProp
     setIcon('💪');
     setCategory('health');
     setImage('');
+    setRepeatFrequency('daily');
     onOpenChange(false);
   };
 
@@ -88,28 +107,46 @@ export const AddHabitDialog = ({ open, onOpenChange, onAdd }: AddHabitDialogProp
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label className="font-body text-sm text-muted-foreground">Category</Label>
-            <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
-              <SelectTrigger className="bg-muted border-border font-body">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border-border">
-                {categories.map(cat => (
-                  <SelectItem key={cat} value={cat} className="font-body capitalize">
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="font-body text-sm text-muted-foreground">Kategori</Label>
+              <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
+                <SelectTrigger className="bg-muted border-border font-body">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  {categories.map(cat => (
+                    <SelectItem key={cat} value={cat} className="font-body">
+                      {categoryLabels[cat]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-body text-sm text-muted-foreground">Pengulangan</Label>
+              <Select value={repeatFrequency} onValueChange={(v) => setRepeatFrequency(v as RepeatFrequency)}>
+                <SelectTrigger className="bg-muted border-border font-body">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  {(Object.keys(frequencyLabels) as RepeatFrequency[]).map(freq => (
+                    <SelectItem key={freq} value={freq} className="font-body">
+                      {frequencyLabels[freq]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
-              Cancel
+              Batal
             </Button>
             <Button type="submit" variant="gaming" className="flex-1">
-              Create Habit
+              Buat Kebiasaan
             </Button>
           </div>
         </form>

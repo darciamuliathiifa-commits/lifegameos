@@ -141,6 +141,7 @@ export type Database = {
           image_url: string | null
           last_completed_at: string | null
           name: string
+          repeat_frequency: string | null
           streak: number
           updated_at: string
           user_id: string
@@ -154,6 +155,7 @@ export type Database = {
           image_url?: string | null
           last_completed_at?: string | null
           name: string
+          repeat_frequency?: string | null
           streak?: number
           updated_at?: string
           user_id: string
@@ -167,6 +169,7 @@ export type Database = {
           image_url?: string | null
           last_completed_at?: string | null
           name?: string
+          repeat_frequency?: string | null
           streak?: number
           updated_at?: string
           user_id?: string
@@ -335,6 +338,7 @@ export type Database = {
           completed: boolean
           created_at: string
           description: string | null
+          difficulty: string | null
           id: string
           image_url: string | null
           title: string
@@ -347,6 +351,7 @@ export type Database = {
           completed?: boolean
           created_at?: string
           description?: string | null
+          difficulty?: string | null
           id?: string
           image_url?: string | null
           title: string
@@ -359,6 +364,7 @@ export type Database = {
           completed?: boolean
           created_at?: string
           description?: string | null
+          difficulty?: string | null
           id?: string
           image_url?: string | null
           title?: string

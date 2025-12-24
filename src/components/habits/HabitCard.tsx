@@ -1,7 +1,8 @@
-import { Check, Flame, Image as ImageIcon } from 'lucide-react';
-import { Habit } from '@/types/game';
+import { Check, Flame, Repeat } from 'lucide-react';
+import { Habit, REPEAT_LABELS, RepeatFrequency } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { CategoryBadge } from '@/components/shared/CategoryBadge';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 interface HabitCardProps {
@@ -58,9 +59,17 @@ export const HabitCard = ({
             )}>
               {habit.name}
             </p>
-            <div className="flex items-center gap-1 text-xs text-accent">
-              <Flame className="w-3 h-3" />
-              <span className="font-body">{habit.streak} day streak</span>
+            <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-1 text-accent">
+                <Flame className="w-3 h-3" />
+                <span className="font-body">{habit.streak} hari</span>
+              </div>
+              {habit.repeatFrequency && (
+                <Badge variant="outline" className="text-xs px-1.5 py-0">
+                  <Repeat className="w-2.5 h-2.5 mr-1" />
+                  {REPEAT_LABELS[habit.repeatFrequency as RepeatFrequency]}
+                </Badge>
+              )}
             </div>
           </div>
         </div>
@@ -105,6 +114,12 @@ export const HabitCard = ({
               )}>
                 {habit.name}
               </h3>
+              {habit.repeatFrequency && (
+                <Badge variant="outline" className="text-xs mt-1 inline-flex">
+                  <Repeat className="w-3 h-3 mr-1" />
+                  {REPEAT_LABELS[habit.repeatFrequency as RepeatFrequency]}
+                </Badge>
+              )}
             </div>
             <div className="flex items-center gap-1 text-accent">
               <Flame className="w-4 h-4" />
@@ -121,12 +136,12 @@ export const HabitCard = ({
                 className="gap-2"
               >
                 <Check className="w-4 h-4" />
-                Mark Done
+                Selesai
               </Button>
             ) : (
               <span className="flex items-center gap-2 text-success font-body text-sm">
                 <Check className="w-4 h-4" />
-                Done for today!
+                Selesai hari ini!
               </span>
             )}
           </div>

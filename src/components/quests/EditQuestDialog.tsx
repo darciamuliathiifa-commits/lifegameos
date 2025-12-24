@@ -5,16 +5,18 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Quest, Category } from '@/types/game';
+import { Badge } from '@/components/ui/badge';
+import { Quest, Category, Difficulty, DIFFICULTY_XP, DIFFICULTY_LABELS } from '@/types/game';
 
 interface EditQuestDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   quest: Quest | null;
-  onSave: (questId: string, updates: { title?: string; description?: string; xpReward?: number; category?: string }) => void;
+  onSave: (questId: string, updates: { title?: string; description?: string; xpReward?: number; category?: string; difficulty?: string }) => void;
 }
 
 const categories: Category[] = ['health', 'productivity', 'social', 'learning', 'creative'];
+const difficulties: Difficulty[] = ['easy', 'medium', 'hard'];
 
 const categoryLabels: Record<Category, string> = {
   health: 'Kesehatan',
@@ -24,18 +26,26 @@ const categoryLabels: Record<Category, string> = {
   creative: 'Kreativitas',
 };
 
+const difficultyColors: Record<Difficulty, string> = {
+  easy: 'bg-green-500/20 text-green-400 border-green-500/30',
+  medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  hard: 'bg-red-500/20 text-red-400 border-red-500/30',
+};
+
 export const EditQuestDialog = ({ open, onOpenChange, quest, onSave }: EditQuestDialogProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [xpReward, setXpReward] = useState(10);
   const [category, setCategory] = useState<Category>('productivity');
+  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+
+  const xpReward = DIFFICULTY_XP[difficulty];
 
   useEffect(() => {
     if (quest) {
       setTitle(quest.title);
       setDescription(quest.description);
-      setXpReward(quest.xpReward);
       setCategory(quest.category);
+      setDifficulty((quest.difficulty as Difficulty) || 'medium');
     }
   }, [quest]);
 
@@ -43,7 +53,7 @@ export const EditQuestDialog = ({ open, onOpenChange, quest, onSave }: EditQuest
     e.preventDefault();
     if (!quest || !title.trim()) return;
     
-    onSave(quest.id, { title, description, xpReward, category });
+    onSave(quest.id, { title, description, xpReward, category, difficulty });
     onOpenChange(false);
   };
 
@@ -94,16 +104,30 @@ export const EditQuestDialog = ({ open, onOpenChange, quest, onSave }: EditQuest
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="xp">XP Reward</Label>
-              <Input
-                id="xp"
-                type="number"
-                min={1}
-                max={1000}
-                value={xpReward}
-                onChange={(e) => setXpReward(Number(e.target.value))}
-              />
+              <Label htmlFor="difficulty">Tingkat Kesulitan</Label>
+              <Select value={difficulty} onValueChange={(v) => setDifficulty(v as Difficulty)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {difficulties.map(diff => (
+                    <SelectItem key={diff} value={diff}>
+                      <div className="flex items-center gap-2">
+                        <span>{DIFFICULTY_LABELS[diff]}</span>
+                        <Badge variant="outline" className={difficultyColors[diff]}>
+                          +{DIFFICULTY_XP[diff]} XP
+                        </Badge>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+          </div>
+
+          <div className="bg-muted/50 p-3 rounded-lg text-center">
+            <span className="text-sm text-muted-foreground">XP yang akan didapat: </span>
+            <span className="text-lg font-display text-primary">{xpReward} XP</span>
           </div>
 
           <div className="flex gap-2 justify-end pt-4">

@@ -25,6 +25,7 @@ export interface Quest {
   category: string;
   completed: boolean;
   image_url: string | null;
+  difficulty?: string;
 }
 
 export interface Habit {
@@ -36,6 +37,7 @@ export interface Habit {
   streak: number;
   completed_today: boolean;
   image_url: string | null;
+  repeat_frequency?: string;
 }
 
 export interface Goal {
@@ -175,7 +177,7 @@ export const useSupabaseGameStore = () => {
     }
   };
 
-  const addQuest = async (quest: { title: string; description?: string; xpReward: number; category: string; image?: string }) => {
+  const addQuest = async (quest: { title: string; description?: string; xpReward: number; category: string; image?: string; difficulty?: string }) => {
     if (!user) return;
 
     const { data, error } = await supabase
@@ -187,6 +189,7 @@ export const useSupabaseGameStore = () => {
         xp_reward: quest.xpReward,
         category: quest.category,
         image_url: quest.image || null,
+        difficulty: quest.difficulty || 'medium',
       })
       .select()
       .single();
@@ -197,7 +200,7 @@ export const useSupabaseGameStore = () => {
     }
   };
 
-  const updateQuest = async (questId: string, updates: { title?: string; description?: string; xpReward?: number; category?: string }) => {
+  const updateQuest = async (questId: string, updates: { title?: string; description?: string; xpReward?: number; category?: string; difficulty?: string }) => {
     if (!user) return;
 
     const { error } = await supabase
@@ -207,6 +210,7 @@ export const useSupabaseGameStore = () => {
         description: updates.description,
         xp_reward: updates.xpReward,
         category: updates.category,
+        difficulty: updates.difficulty,
       })
       .eq('id', questId);
 
@@ -217,6 +221,7 @@ export const useSupabaseGameStore = () => {
         description: updates.description || q.description,
         xp_reward: updates.xpReward || q.xp_reward,
         category: updates.category || q.category,
+        difficulty: updates.difficulty || q.difficulty,
       } : q));
       toast.success('Misi diperbarui!');
     }
@@ -281,7 +286,7 @@ export const useSupabaseGameStore = () => {
     }
   };
 
-  const addHabit = async (habit: { name: string; icon: string; category: string; image?: string }) => {
+  const addHabit = async (habit: { name: string; icon: string; category: string; image?: string; repeatFrequency?: string }) => {
     if (!user) return;
 
     const { data, error } = await supabase
@@ -292,6 +297,7 @@ export const useSupabaseGameStore = () => {
         icon: habit.icon,
         category: habit.category,
         image_url: habit.image || null,
+        repeat_frequency: habit.repeatFrequency || 'daily',
       })
       .select()
       .single();
@@ -467,6 +473,7 @@ export const useSupabaseGameStore = () => {
     completedToday: h.completed_today,
     category: h.category as 'health' | 'learning' | 'productivity' | 'social' | 'creative',
     image: h.image_url || undefined,
+    repeatFrequency: (h.repeat_frequency || 'daily') as 'daily' | 'weekly' | 'monthly',
   }));
 
   const transformedGoals = goals.map(g => ({
