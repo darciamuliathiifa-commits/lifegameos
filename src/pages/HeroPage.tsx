@@ -1,10 +1,29 @@
-import { ArrowRight, Zap, Target, Flame, Trophy } from 'lucide-react';
+import { ArrowRight, Zap, Target, Flame, Trophy, Sparkles, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import heroBanner from '@/assets/hero-banner.jpg';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return { text: 'Good Morning', emoji: '☀️', icon: Sun };
+  if (hour >= 12 && hour < 17) return { text: 'Good Afternoon', emoji: '🌤️', icon: Sun };
+  if (hour >= 17 && hour < 21) return { text: 'Good Evening', emoji: '🌅', icon: Moon };
+  return { text: 'Good Night', emoji: '🌙', icon: Moon };
+};
+
+const motivationalQuotes = [
+  "Every day is a new beginning. Take a deep breath and start again.",
+  "Your only limit is your mind. Dream big, work hard.",
+  "Today is the perfect day to start something new.",
+  "Small steps every day lead to big changes.",
+  "Believe in yourself and all that you are.",
+  "The secret of getting ahead is getting started.",
+  "Make today so awesome that yesterday gets jealous.",
+  "You are capable of amazing things.",
+];
 
 const features = [
   {
@@ -32,6 +51,14 @@ const features = [
 const HeroPage = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const [greeting] = useState(getGreeting());
+  const [quote] = useState(motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (!loading && user) {
@@ -74,21 +101,46 @@ const HeroPage = () => {
           {/* Content */}
           <div className="relative z-10 container mx-auto px-6 py-20">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 mb-6 animate-slide-up">
-                <Zap className="w-4 h-4 text-primary" />
+              {/* Time & Greeting */}
+              <div className="flex items-center gap-4 mb-6 animate-slide-up">
+                <div className="text-5xl md:text-6xl font-display text-primary text-glow tabular-nums">
+                  {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                </div>
+                <div className="h-12 w-px bg-primary/30" />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{greeting.emoji}</span>
+                    <span className="text-xl font-display text-foreground">{greeting.text}!</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-body">
+                    {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 mb-6 animate-slide-up" style={{ animationDelay: '100ms' }}>
+                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
                 <span className="text-sm font-body text-primary uppercase tracking-wider">
                   Your Life Operating System
                 </span>
               </div>
 
-              <h1 className="text-5xl md:text-7xl font-display text-foreground mb-6 animate-slide-up" style={{ animationDelay: '100ms' }}>
+              <h1 className="text-5xl md:text-7xl font-display text-foreground mb-4 animate-slide-up" style={{ animationDelay: '150ms' }}>
                 LIFE<span className="text-glow text-primary">GAME</span>
                 <span className="block text-3xl md:text-4xl mt-2 text-muted-foreground">
                   OS HUB
                 </span>
               </h1>
 
-              <p className="text-lg md:text-xl font-body text-muted-foreground mb-8 leading-relaxed animate-slide-up" style={{ animationDelay: '200ms' }}>
+              {/* Motivational Quote */}
+              <div className="relative mb-8 animate-slide-up" style={{ animationDelay: '200ms' }}>
+                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-secondary to-accent rounded-full" />
+                <p className="pl-4 text-lg md:text-xl font-body text-foreground/80 leading-relaxed italic">
+                  "{quote}"
+                </p>
+              </div>
+
+              <p className="text-base font-body text-muted-foreground mb-8 leading-relaxed animate-slide-up" style={{ animationDelay: '250ms' }}>
                 All your thoughts in one private place. Transform your daily routine into an epic adventure with quests, habits, goals, and achievements.
               </p>
 
@@ -99,7 +151,7 @@ const HeroPage = () => {
                   onClick={handleGetStarted}
                   className="gap-3"
                 >
-                  {user ? 'Enter Your OS' : 'Get Started'}
+                  {user ? 'Enter Your OS' : 'Start Your Day'}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
                 <Button

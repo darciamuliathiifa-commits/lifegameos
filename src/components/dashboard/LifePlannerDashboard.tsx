@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
+import { PrayerTimesWidget } from '@/components/prayers/PrayerTimesWidget';
+import { CalendarWithNotes } from '@/components/calendar/CalendarWithNotes';
 
 interface LifePlannerDashboardProps {
   stats: Stats;
@@ -274,83 +276,20 @@ export const LifePlannerDashboard = ({
           </div>
         </div>
 
-        {/* Play Now Widget */}
+        {/* Play Now & Prayer Times */}
         <div className="space-y-4">
           <h3 className="font-display text-xl text-foreground">— Play Now</h3>
           <MusicPlayer compact />
+          <PrayerTimesWidget />
         </div>
       </div>
 
       {/* Calendar & Upcoming Section */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Calendar */}
+        {/* Calendar with Notes Sync */}
         <div className="lg:col-span-2 space-y-4">
           <h2 className="font-display text-xl text-foreground">— Calendar</h2>
-
-          {/* Calendar Tabs */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {overviewTabs.slice(0, 5).map((tab) => (
-              <button
-                key={`cal-${tab.name}`}
-                className="px-3 py-1.5 rounded-lg text-sm font-body text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all"
-              >
-                {tab.name}
-              </button>
-            ))}
-            <span className="text-xs text-muted-foreground/70 ml-1">2 more...</span>
-          </div>
-
-          {/* Month Navigation */}
-          <div className="flex items-center justify-between">
-            <span className="font-display text-lg text-foreground">{monthName}</span>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))} className="h-8 w-8">
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentMonth(new Date())} className="h-8 text-xs">
-                Today
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))} className="h-8 w-8">
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Calendar Grid */}
-          <div className="card-gaming rounded-xl p-4 border border-border/50">
-            <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground font-body mb-3">
-              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                <div key={day} className="py-2 font-medium">{day}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-1">
-              {calendarDays.map((day, index) => {
-                const isToday = day === new Date().getDate() && 
-                  currentMonth.getMonth() === new Date().getMonth() &&
-                  currentMonth.getFullYear() === new Date().getFullYear();
-                
-                return (
-                  <div
-                    key={index}
-                    className={cn(
-                      "aspect-square p-1 rounded-lg text-center font-body text-sm relative flex flex-col items-center justify-center",
-                      day ? "hover:bg-muted/50 cursor-pointer transition-colors" : "",
-                      isToday && "bg-primary/20 text-primary font-bold ring-1 ring-primary/50"
-                    )}
-                  >
-                    <span>{day}</span>
-                    {/* Task indicators */}
-                    {day && day % 5 === 0 && (
-                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
-                        <div className="w-1 h-1 rounded-full bg-primary" />
-                        <div className="w-1 h-1 rounded-full bg-secondary" />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <CalendarWithNotes />
         </div>
 
         {/* Upcoming */}
