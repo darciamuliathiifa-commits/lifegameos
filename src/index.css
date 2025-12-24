@@ -4,108 +4,115 @@
 
 @layer base {
   :root {
-    /* Genshin-inspired cheerful palette */
-    --background: 210 40% 96%;
-    --foreground: 220 30% 15%;
+    /* Genshin Dendro-inspired palette - Sage Green & Gold */
+    --background: 80 25% 95%;
+    --foreground: 150 30% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 30% 15%;
+    --card: 60 30% 97%;
+    --card-foreground: 150 30% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 15%;
+    --popover: 60 30% 98%;
+    --popover-foreground: 150 30% 15%;
 
-    /* Gold/Amber primary - signature Genshin color */
-    --primary: 42 85% 55%;
-    --primary-foreground: 0 0% 100%;
+    /* Sage Green primary */
+    --primary: 150 35% 40%;
+    --primary-foreground: 60 30% 98%;
 
-    /* Sky blue secondary */
-    --secondary: 200 85% 55%;
-    --secondary-foreground: 0 0% 100%;
+    /* Gold/Amber accent */
+    --secondary: 42 75% 55%;
+    --secondary-foreground: 150 30% 10%;
 
-    --muted: 210 30% 90%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 80 20% 90%;
+    --muted-foreground: 150 15% 40%;
 
-    /* Teal accent - Anemo inspired */
-    --accent: 170 70% 45%;
-    --accent-foreground: 0 0% 100%;
+    /* Teal accent */
+    --accent: 165 50% 45%;
+    --accent-foreground: 60 30% 98%;
 
-    --destructive: 0 75% 55%;
+    --destructive: 0 65% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 145 70% 45%;
+    --success: 145 55% 40%;
     --success-foreground: 0 0% 100%;
 
-    --border: 210 25% 85%;
-    --input: 210 25% 92%;
-    --ring: 42 85% 55%;
+    --border: 80 25% 82%;
+    --input: 80 20% 92%;
+    --ring: 42 75% 55%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Element-inspired colors (Genshin elements) */
-    --pyro: 15 85% 55%;
-    --hydro: 200 90% 50%;
-    --anemo: 165 65% 50%;
-    --electro: 280 75% 60%;
-    --dendro: 85 70% 45%;
-    --cryo: 195 70% 70%;
+    /* Element-inspired colors */
+    --pyro: 15 80% 50%;
+    --hydro: 200 85% 50%;
+    --anemo: 165 55% 50%;
+    --electro: 280 70% 55%;
+    --dendro: 150 45% 40%;
+    --cryo: 195 60% 65%;
     --geo: 42 70% 55%;
 
+    /* Ornamental design tokens */
+    --ornament-gold: 42 80% 55%;
+    --ornament-green: 150 35% 35%;
+    --cream: 45 40% 95%;
+
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(42 85% 60%) 0%, hsl(35 90% 50%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(200 85% 60%) 0%, hsl(210 90% 50%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 30% 98%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(200 70% 60%) 0%, hsl(280 60% 60%) 50%, hsl(42 80% 60%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(150 35% 45%) 0%, hsl(165 45% 40%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(42 80% 60%) 0%, hsl(35 85% 50%) 100%);
+    --gradient-card: linear-gradient(160deg, hsl(60 35% 98%) 0%, hsl(80 25% 94%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(150 30% 92%) 0%, hsl(80 25% 95%) 50%, hsl(45 35% 93%) 100%);
+    --gradient-ornament: linear-gradient(135deg, hsl(42 75% 55%) 0%, hsl(42 80% 65%) 50%, hsl(42 75% 55%) 100%);
 
     /* Shadows */
-    --shadow-soft: 0 4px 20px hsl(220 30% 15% / 0.08);
-    --shadow-card: 0 8px 30px hsl(220 30% 15% / 0.1), 0 2px 8px hsl(220 30% 15% / 0.05);
-    --shadow-glow: 0 0 20px hsl(42 85% 55% / 0.4);
-    --shadow-glow-sm: 0 0 10px hsl(42 85% 55% / 0.3);
+    --shadow-soft: 0 4px 20px hsl(150 30% 15% / 0.06);
+    --shadow-card: 0 8px 30px hsl(150 30% 15% / 0.08), 0 2px 8px hsl(150 30% 15% / 0.04);
+    --shadow-glow: 0 0 20px hsl(42 75% 55% / 0.35);
+    --shadow-glow-sm: 0 0 12px hsl(42 75% 55% / 0.25);
+    --shadow-ornate: 0 4px 16px hsl(150 30% 20% / 0.12), inset 0 1px 0 hsl(60 40% 98% / 0.8);
 
-    --sidebar-background: 220 25% 18%;
-    --sidebar-foreground: 42 50% 95%;
-    --sidebar-primary: 42 85% 55%;
-    --sidebar-primary-foreground: 220 25% 10%;
-    --sidebar-accent: 220 25% 25%;
-    --sidebar-accent-foreground: 42 50% 95%;
-    --sidebar-border: 220 25% 25%;
-    --sidebar-ring: 42 85% 55%;
+    --sidebar-background: 150 25% 18%;
+    --sidebar-foreground: 45 40% 95%;
+    --sidebar-primary: 42 75% 55%;
+    --sidebar-primary-foreground: 150 25% 12%;
+    --sidebar-accent: 150 25% 25%;
+    --sidebar-accent-foreground: 45 40% 95%;
+    --sidebar-border: 150 20% 25%;
+    --sidebar-ring: 42 75% 55%;
   }
 
   .dark {
-    --background: 220 25% 10%;
-    --foreground: 42 30% 95%;
+    --background: 150 25% 8%;
+    --foreground: 45 35% 92%;
 
-    --card: 220 25% 14%;
-    --card-foreground: 42 30% 95%;
+    --card: 150 25% 12%;
+    --card-foreground: 45 35% 92%;
 
-    --popover: 220 25% 12%;
-    --popover-foreground: 42 30% 95%;
+    --popover: 150 25% 10%;
+    --popover-foreground: 45 35% 92%;
 
-    --primary: 42 85% 55%;
-    --primary-foreground: 220 25% 10%;
+    --primary: 150 40% 45%;
+    --primary-foreground: 150 25% 8%;
 
-    --secondary: 200 70% 50%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 42 70% 50%;
+    --secondary-foreground: 150 25% 8%;
 
-    --muted: 220 20% 20%;
-    --muted-foreground: 220 15% 60%;
+    --muted: 150 20% 18%;
+    --muted-foreground: 150 15% 55%;
 
-    --accent: 170 60% 45%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 165 45% 40%;
+    --accent-foreground: 45 35% 95%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 60% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 145 65% 40%;
+    --success: 145 50% 38%;
     --success-foreground: 0 0% 100%;
 
-    --border: 220 25% 22%;
-    --input: 220 25% 18%;
-    --ring: 42 85% 55%;
+    --border: 150 20% 20%;
+    --input: 150 20% 15%;
+    --ring: 42 70% 50%;
 
-    --gradient-card: linear-gradient(145deg, hsl(220 25% 16%) 0%, hsl(220 25% 12%) 100%);
-    --shadow-card: 0 8px 30px hsl(220 30% 5% / 0.4);
+    --gradient-card: linear-gradient(160deg, hsl(150 25% 14%) 0%, hsl(150 25% 10%) 100%);
+    --shadow-card: 0 8px 30px hsl(150 30% 5% / 0.5);
   }
 }
 
@@ -117,8 +124,9 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     background-image: 
-      radial-gradient(ellipse at 20% 10%, hsl(var(--secondary) / 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 90%, hsl(var(--primary) / 0.08) 0%, transparent 50%);
+      radial-gradient(ellipse at 20% 0%, hsl(var(--primary) / 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, hsl(var(--secondary) / 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, hsl(var(--cream) / 0.5) 0%, transparent 70%);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -135,12 +143,13 @@
     font-family: 'Noto Sans', sans-serif;
   }
 
+  /* Ornamental text effects */
   .text-glow {
-    text-shadow: 0 0 10px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--primary) / 0.3);
+    text-shadow: 0 0 10px hsl(var(--secondary) / 0.5), 0 0 20px hsl(var(--secondary) / 0.3);
   }
 
-  .text-glow-accent {
-    text-shadow: 0 0 10px hsl(var(--accent) / 0.6), 0 0 20px hsl(var(--accent) / 0.3);
+  .text-glow-green {
+    text-shadow: 0 0 10px hsl(var(--primary) / 0.5), 0 0 20px hsl(var(--primary) / 0.3);
   }
 
   .box-glow {
@@ -151,18 +160,53 @@
     box-shadow: var(--shadow-glow-sm);
   }
 
-  .gradient-border {
-    background: linear-gradient(var(--background), var(--background)) padding-box,
-                var(--gradient-primary) border-box;
-    border: 2px solid transparent;
+  /* Ornamental border styles */
+  .border-ornate {
+    border: 2px solid hsl(var(--secondary) / 0.6);
+    box-shadow: 
+      inset 0 0 0 1px hsl(var(--secondary) / 0.2),
+      0 0 0 1px hsl(var(--secondary) / 0.1);
   }
 
+  .border-ornate-primary {
+    border: 2px solid hsl(var(--primary) / 0.5);
+    box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.15);
+  }
+
+  /* Card styles */
+  .card-ornate {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-ornate);
+    border: 1px solid hsl(var(--secondary) / 0.3);
+    position: relative;
+  }
+
+  .card-ornate::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-gold);
+    border-radius: inherit;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .card-gaming {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-card);
+    border: 1px solid hsl(var(--border));
+  }
+
+  /* Animated elements */
   .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
+    animation: pulse-glow 2.5s ease-in-out infinite;
   }
 
   .animate-float {
-    animation: float 3s ease-in-out infinite;
+    animation: float 4s ease-in-out infinite;
   }
 
   .animate-slide-up {
@@ -174,41 +218,22 @@
   }
 
   .animate-shimmer {
-    animation: shimmer 2s linear infinite;
+    animation: shimmer 3s linear infinite;
+    background-size: 200% 100%;
   }
 
+  /* XP bar with gold gradient */
   .xp-bar {
     background: linear-gradient(90deg, 
-      hsl(var(--primary)) 0%, 
-      hsl(35 90% 60%) 50%, 
-      hsl(var(--primary)) 100%
+      hsl(var(--secondary)) 0%, 
+      hsl(42 85% 65%) 50%, 
+      hsl(var(--secondary)) 100%
     );
   }
 
-  .card-gaming {
-    background: var(--gradient-card);
-    box-shadow: var(--shadow-card);
-    border: 1px solid hsl(var(--border));
-  }
-
-  .card-element {
-    @apply relative overflow-hidden rounded-xl;
-    background: var(--gradient-card);
-    box-shadow: var(--shadow-card);
-  }
-
-  .card-element::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--gradient-primary);
-  }
-
+  /* Button styles */
   .btn-gaming {
-    background: var(--gradient-primary);
+    background: var(--gradient-gold);
     box-shadow: var(--shadow-glow-sm);
     transition: all 0.3s ease;
   }
@@ -218,42 +243,82 @@
     transform: translateY(-2px);
   }
 
-  /* Element-themed badges */
-  .badge-pyro {
-    @apply bg-gradient-to-r from-orange-500 to-red-500 text-white;
+  .btn-ornate {
+    background: var(--gradient-primary);
+    border: 1px solid hsl(var(--secondary) / 0.4);
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
   }
 
-  .badge-hydro {
-    @apply bg-gradient-to-r from-blue-400 to-cyan-500 text-white;
+  .btn-ornate::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, hsl(var(--secondary) / 0.2), transparent);
+    transition: left 0.5s ease;
   }
 
-  .badge-anemo {
-    @apply bg-gradient-to-r from-teal-400 to-emerald-500 text-white;
+  .btn-ornate:hover::after {
+    left: 100%;
   }
 
-  .badge-electro {
-    @apply bg-gradient-to-r from-purple-500 to-violet-600 text-white;
+  /* Decorative divider */
+  .divider-ornate {
+    height: 2px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      hsl(var(--secondary) / 0.5) 20%, 
+      hsl(var(--secondary)) 50%, 
+      hsl(var(--secondary) / 0.5) 80%, 
+      transparent 100%
+    );
   }
 
-  .badge-dendro {
-    @apply bg-gradient-to-r from-green-500 to-lime-500 text-white;
+  /* Element badges */
+  .badge-pyro { @apply bg-gradient-to-r from-orange-500 to-red-500 text-white; }
+  .badge-hydro { @apply bg-gradient-to-r from-blue-400 to-cyan-500 text-white; }
+  .badge-anemo { @apply bg-gradient-to-r from-teal-400 to-emerald-500 text-white; }
+  .badge-electro { @apply bg-gradient-to-r from-purple-500 to-violet-600 text-white; }
+  .badge-dendro { @apply bg-gradient-to-r from-green-600 to-emerald-600 text-white; }
+  .badge-geo { @apply bg-gradient-to-r from-amber-400 to-yellow-500 text-white; }
+  .badge-cryo { @apply bg-gradient-to-r from-cyan-300 to-blue-300 text-slate-700; }
+
+  /* Ornamental corner decorations */
+  .corner-ornament {
+    position: relative;
   }
 
-  .badge-geo {
-    @apply bg-gradient-to-r from-amber-400 to-yellow-500 text-white;
+  .corner-ornament::before,
+  .corner-ornament::after {
+    content: '❧';
+    position: absolute;
+    font-size: 1.25rem;
+    color: hsl(var(--secondary));
+    opacity: 0.6;
   }
 
-  .badge-cryo {
-    @apply bg-gradient-to-r from-cyan-300 to-blue-300 text-slate-700;
+  .corner-ornament::before {
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .corner-ornament::after {
+    bottom: 0.5rem;
+    right: 0.5rem;
+    transform: rotate(180deg);
   }
 }
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    box-shadow: 0 0 15px hsl(var(--secondary) / 0.25);
   }
   50% {
-    box-shadow: 0 0 40px hsl(var(--primary) / 0.6);
+    box-shadow: 0 0 30px hsl(var(--secondary) / 0.5);
   }
 }
 
@@ -308,10 +373,17 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.6);
+  background: hsl(var(--primary) / 0.5);
   border-radius: 4px;
+  border: 2px solid hsl(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.9);
+  background: hsl(var(--primary) / 0.7);
+}
+
+/* Selection styling */
+::selection {
+  background: hsl(var(--secondary) / 0.3);
+  color: hsl(var(--foreground));
 }

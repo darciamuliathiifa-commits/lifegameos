@@ -5,25 +5,26 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold font-body tracking-wide ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold font-body tracking-wide ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-primary to-amber-500 text-white shadow-md hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5",
+        default: "bg-gradient-to-r from-primary to-emerald-600 text-primary-foreground shadow-md hover:shadow-lg hover:-translate-y-0.5 border border-primary/20",
         destructive: "bg-gradient-to-r from-destructive to-red-600 text-white shadow-md hover:shadow-destructive/30",
-        outline: "border-2 border-primary bg-transparent text-primary hover:bg-primary/10 hover:shadow-md",
-        secondary: "bg-gradient-to-r from-secondary to-sky-500 text-white shadow-md hover:shadow-secondary/30 hover:-translate-y-0.5",
+        outline: "border-2 border-secondary bg-transparent text-secondary hover:bg-secondary/10 hover:shadow-md",
+        secondary: "bg-gradient-to-r from-secondary to-amber-500 text-secondary-foreground shadow-md hover:shadow-secondary/30 hover:-translate-y-0.5",
         ghost: "text-foreground hover:bg-muted hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        gaming: "bg-gradient-to-r from-primary via-orange-400 to-amber-500 text-white shadow-lg hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-1",
-        accent: "bg-gradient-to-r from-accent to-teal-500 text-white shadow-md hover:shadow-accent/30",
-        success: "bg-gradient-to-r from-success to-emerald-500 text-white shadow-md hover:shadow-success/30",
+        gaming: "bg-gradient-to-r from-secondary via-amber-400 to-secondary text-secondary-foreground shadow-lg hover:shadow-xl hover:shadow-secondary/40 hover:-translate-y-1 border border-secondary/30",
+        accent: "bg-gradient-to-r from-accent to-teal-500 text-accent-foreground shadow-md hover:shadow-accent/30",
+        success: "bg-gradient-to-r from-success to-emerald-500 text-success-foreground shadow-md hover:shadow-success/30",
+        ornate: "bg-gradient-to-r from-primary via-emerald-600 to-primary text-primary-foreground shadow-lg border-2 border-secondary/40 hover:border-secondary/60 hover:shadow-xl",
       },
       size: {
         default: "h-10 px-5 py-2",
-        sm: "h-9 rounded-lg px-4",
-        lg: "h-12 rounded-xl px-8",
-        xl: "h-14 rounded-2xl px-10 text-base",
+        sm: "h-9 rounded-md px-4 text-xs",
+        lg: "h-12 rounded-lg px-8",
+        xl: "h-14 rounded-xl px-10 text-base",
         icon: "h-10 w-10",
       },
     },
