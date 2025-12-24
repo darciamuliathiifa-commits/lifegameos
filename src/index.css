@@ -4,109 +4,130 @@
 
 @layer base {
   :root {
-    /* Treasure Land Jungle Adventure Palette */
-    --background: 120 30% 96%;
-    --foreground: 150 40% 15%;
+    /* Modern Dark Fintech Palette - Light mode fallback */
+    --background: 220 20% 97%;
+    --foreground: 220 20% 10%;
 
-    --card: 90 40% 98%;
-    --card-foreground: 150 40% 15%;
+    --card: 220 15% 95%;
+    --card-foreground: 220 20% 10%;
 
-    --popover: 90 40% 99%;
-    --popover-foreground: 150 40% 15%;
+    --popover: 220 15% 98%;
+    --popover-foreground: 220 20% 10%;
 
-    /* Vibrant Jungle Green primary */
-    --primary: 140 55% 40%;
+    --primary: 200 90% 50%;
     --primary-foreground: 0 0% 100%;
 
-    /* Golden Orange accent (like Treasure Land logo) */
     --secondary: 35 90% 55%;
     --secondary-foreground: 35 90% 15%;
 
-    --muted: 100 20% 90%;
-    --muted-foreground: 140 15% 45%;
+    --muted: 220 15% 90%;
+    --muted-foreground: 220 10% 45%;
 
-    /* Sky Blue accent */
-    --accent: 200 80% 55%;
+    --accent: 270 80% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 145 60% 45%;
+    --success: 145 65% 45%;
     --success-foreground: 0 0% 100%;
 
-    --border: 120 20% 85%;
-    --input: 100 25% 93%;
-    --ring: 35 90% 55%;
+    --border: 220 15% 85%;
+    --input: 220 15% 90%;
+    --ring: 200 90% 50%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Adventure element colors */
-    --jungle: 140 50% 35%;
-    --treasure: 45 95% 50%;
-    --ocean: 195 80% 50%;
-    --sunset: 25 90% 55%;
+    /* Accent colors */
+    --jungle: 145 65% 40%;
+    --treasure: 35 90% 55%;
+    --ocean: 200 90% 50%;
+    --sunset: 0 70% 55%;
     --earth: 30 45% 40%;
     --sky: 200 85% 65%;
 
     /* Design tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(140 55% 45%) 0%, hsl(160 50% 40%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(45 95% 55%) 0%, hsl(35 90% 50%) 100%);
-    --gradient-sky: linear-gradient(180deg, hsl(200 85% 75%) 0%, hsl(200 70% 90%) 100%);
-    --gradient-card: linear-gradient(160deg, hsl(90 45% 99%) 0%, hsl(100 30% 96%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(200 90% 50%) 0%, hsl(270 80% 60%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(35 90% 55%) 0%, hsl(25 85% 50%) 100%);
+    --gradient-card: linear-gradient(160deg, hsl(220 20% 18%) 0%, hsl(220 25% 12%) 100%);
 
     /* Shadows */
-    --shadow-soft: 0 4px 20px hsl(140 40% 20% / 0.08);
-    --shadow-card: 0 8px 30px hsl(140 40% 20% / 0.1), 0 2px 8px hsl(140 40% 20% / 0.05);
-    --shadow-glow: 0 0 25px hsl(35 90% 55% / 0.4);
-    --shadow-glow-sm: 0 0 15px hsl(35 90% 55% / 0.3);
-    --shadow-jungle: 0 4px 20px hsl(140 50% 25% / 0.15);
+    --shadow-soft: 0 4px 20px hsl(220 40% 5% / 0.1);
+    --shadow-card: 0 8px 30px hsl(220 40% 5% / 0.15);
+    --shadow-glow: 0 0 25px hsl(200 90% 50% / 0.3);
 
-    /* Sidebar - Dark jungle theme */
-    --sidebar-background: 150 45% 18%;
-    --sidebar-foreground: 90 40% 95%;
-    --sidebar-primary: 35 90% 55%;
-    --sidebar-primary-foreground: 150 45% 12%;
-    --sidebar-accent: 150 40% 25%;
-    --sidebar-accent-foreground: 90 40% 95%;
-    --sidebar-border: 150 35% 25%;
-    --sidebar-ring: 35 90% 55%;
+    /* Sidebar */
+    --sidebar-background: 220 25% 12%;
+    --sidebar-foreground: 220 10% 85%;
+    --sidebar-primary: 200 90% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 18%;
+    --sidebar-accent-foreground: 220 10% 85%;
+    --sidebar-border: 220 20% 20%;
+    --sidebar-ring: 200 90% 50%;
   }
 
   .dark {
-    --background: 150 40% 8%;
-    --foreground: 90 35% 92%;
+    /* Modern Dark Fintech Palette */
+    --background: 222 30% 8%;
+    --foreground: 220 15% 90%;
 
-    --card: 150 35% 12%;
-    --card-foreground: 90 35% 92%;
+    --card: 222 25% 12%;
+    --card-foreground: 220 15% 90%;
 
-    --popover: 150 35% 10%;
-    --popover-foreground: 90 35% 92%;
+    --popover: 222 28% 10%;
+    --popover-foreground: 220 15% 90%;
 
-    --primary: 140 50% 50%;
-    --primary-foreground: 150 40% 8%;
+    --primary: 195 90% 50%;
+    --primary-foreground: 222 30% 8%;
 
-    --secondary: 35 85% 55%;
-    --secondary-foreground: 150 40% 8%;
+    --secondary: 35 90% 55%;
+    --secondary-foreground: 222 30% 8%;
 
-    --muted: 150 25% 18%;
-    --muted-foreground: 140 20% 55%;
+    --muted: 222 20% 18%;
+    --muted-foreground: 220 15% 55%;
 
-    --accent: 200 70% 55%;
+    --accent: 270 70% 60%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 65% 50%;
+    --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 145 55% 45%;
+    --success: 150 70% 45%;
     --success-foreground: 0 0% 100%;
 
-    --border: 150 25% 22%;
-    --input: 150 25% 16%;
-    --ring: 35 85% 55%;
+    --border: 222 20% 18%;
+    --input: 222 20% 15%;
+    --ring: 195 90% 50%;
 
-    --gradient-card: linear-gradient(160deg, hsl(150 35% 14%) 0%, hsl(150 35% 10%) 100%);
-    --shadow-card: 0 8px 30px hsl(150 40% 5% / 0.5);
+    /* Accent colors - darker theme */
+    --jungle: 150 70% 45%;
+    --treasure: 35 90% 55%;
+    --ocean: 195 90% 50%;
+    --sunset: 0 65% 55%;
+    --earth: 30 40% 35%;
+    --sky: 200 80% 60%;
+
+    /* Design tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(195 90% 50%) 0%, hsl(270 70% 55%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(35 90% 55%) 0%, hsl(25 85% 50%) 100%);
+    --gradient-card: linear-gradient(160deg, hsl(222 25% 14%) 0%, hsl(222 28% 10%) 100%);
+    --gradient-subtle: linear-gradient(135deg, hsl(222 25% 12%) 0%, hsl(222 30% 8%) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(222 40% 3% / 0.5);
+    --shadow-card: 0 8px 30px hsl(222 40% 3% / 0.6);
+    --shadow-glow: 0 0 30px hsl(195 90% 50% / 0.25);
+
+    /* Sidebar */
+    --sidebar-background: 222 30% 10%;
+    --sidebar-foreground: 220 15% 85%;
+    --sidebar-primary: 195 90% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 25% 15%;
+    --sidebar-accent-foreground: 220 15% 90%;
+    --sidebar-border: 222 20% 16%;
+    --sidebar-ring: 195 90% 50%;
   }
 }
 
@@ -118,164 +139,132 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     background-image: 
-      radial-gradient(ellipse at 30% 0%, hsl(var(--sky) / 0.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 70% 100%, hsl(var(--primary) / 0.1) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, hsl(var(--background)) 0%, transparent 100%);
+      radial-gradient(ellipse at 20% 0%, hsl(270 70% 55% / 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, hsl(195 90% 50% / 0.06) 0%, transparent 50%);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-semibold tracking-wide;
+    @apply font-display font-semibold tracking-tight;
   }
 }
 
 @layer utilities {
   .font-display {
-    font-family: 'Fredoka', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
   }
 
   .font-body {
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 
-  /* Treasure glow effects */
+  /* Glow effects */
   .text-glow {
-    text-shadow: 0 0 12px hsl(var(--secondary) / 0.6), 0 0 24px hsl(var(--secondary) / 0.3);
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.25);
   }
 
-  .text-glow-green {
-    text-shadow: 0 0 12px hsl(var(--primary) / 0.5), 0 0 24px hsl(var(--primary) / 0.25);
+  .text-glow-cyan {
+    text-shadow: 0 0 20px hsl(195 90% 50% / 0.6), 0 0 40px hsl(195 90% 50% / 0.3);
+  }
+
+  .text-glow-purple {
+    text-shadow: 0 0 20px hsl(270 70% 60% / 0.6), 0 0 40px hsl(270 70% 60% / 0.3);
   }
 
   .box-glow {
     box-shadow: var(--shadow-glow);
   }
 
-  .box-glow-sm {
-    box-shadow: var(--shadow-glow-sm);
-  }
-
-  /* Adventure card styles */
-  .card-adventure {
+  /* Modern card styles */
+  .card-modern {
     background: var(--gradient-card);
-    box-shadow: var(--shadow-card);
-    border: 2px solid hsl(var(--primary) / 0.15);
-    border-radius: 1.25rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card-adventure::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--gradient-gold);
-    border-radius: inherit;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
-  .card-gaming {
-    background: var(--gradient-card);
-    box-shadow: var(--shadow-card);
     border: 1px solid hsl(var(--border));
-    border-radius: 1rem;
+    border-radius: var(--radius);
+    backdrop-filter: blur(10px);
+  }
+
+  .card-glass {
+    background: hsl(var(--card) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.5);
+    border-radius: var(--radius);
+    backdrop-filter: blur(20px);
   }
 
   /* Animated elements */
   .animate-pulse-glow {
-    animation: pulse-glow 2.5s ease-in-out infinite;
+    animation: pulse-glow 3s ease-in-out infinite;
   }
 
   .animate-float {
-    animation: float 4s ease-in-out infinite;
+    animation: float 5s ease-in-out infinite;
   }
 
   .animate-slide-up {
-    animation: slide-up 0.5s ease-out;
+    animation: slide-up 0.4s ease-out;
   }
 
   .animate-scale-in {
-    animation: scale-in 0.3s ease-out;
+    animation: scale-in 0.25s ease-out;
   }
 
   .animate-shimmer {
-    animation: shimmer 3s linear infinite;
+    animation: shimmer 2.5s linear infinite;
     background-size: 200% 100%;
   }
 
-  .animate-bounce-gentle {
-    animation: bounce-gentle 2s ease-in-out infinite;
+  /* Modern button styles */
+  .btn-primary {
+    background: var(--gradient-primary);
+    box-shadow: 0 4px 15px hsl(195 90% 50% / 0.3);
+    transition: all 0.2s ease;
   }
 
-  /* XP bar with treasure gold */
-  .xp-bar {
+  .btn-primary:hover {
+    box-shadow: 0 6px 20px hsl(195 90% 50% / 0.4);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background: hsl(var(--muted));
+    border: 1px solid hsl(var(--border));
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background: hsl(var(--muted) / 0.8);
+    border-color: hsl(var(--primary) / 0.5);
+  }
+
+  /* Status badges */
+  .badge-success { @apply bg-success/20 text-success border border-success/30; }
+  .badge-warning { @apply bg-secondary/20 text-secondary border border-secondary/30; }
+  .badge-danger { @apply bg-destructive/20 text-destructive border border-destructive/30; }
+  .badge-info { @apply bg-primary/20 text-primary border border-primary/30; }
+
+  /* Category badges with gradient */
+  .badge-jungle { @apply bg-gradient-to-r from-emerald-500/20 to-green-600/20 text-emerald-400 border border-emerald-500/30; }
+  .badge-treasure { @apply bg-gradient-to-r from-amber-400/20 to-orange-500/20 text-amber-400 border border-amber-500/30; }
+  .badge-ocean { @apply bg-gradient-to-r from-cyan-400/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30; }
+  .badge-sunset { @apply bg-gradient-to-r from-orange-400/20 to-red-500/20 text-orange-400 border border-orange-500/30; }
+
+  /* XP/Progress bar */
+  .progress-bar {
     background: linear-gradient(90deg, 
-      hsl(var(--secondary)) 0%, 
-      hsl(45 95% 60%) 50%, 
-      hsl(var(--secondary)) 100%
+      hsl(195 90% 50%) 0%, 
+      hsl(270 70% 60%) 100%
     );
   }
 
-  /* Adventure button styles */
-  .btn-adventure {
-    background: var(--gradient-gold);
-    box-shadow: var(--shadow-glow-sm), 0 4px 0 hsl(35 90% 40%);
-    transition: all 0.2s ease;
-    transform: translateY(0);
-  }
-
-  .btn-adventure:hover {
-    box-shadow: var(--shadow-glow), 0 6px 0 hsl(35 90% 40%);
-    transform: translateY(-2px);
-  }
-
-  .btn-adventure:active {
-    box-shadow: 0 0 10px hsl(35 90% 55% / 0.3), 0 2px 0 hsl(35 90% 40%);
-    transform: translateY(2px);
-  }
-
-  .btn-jungle {
-    background: var(--gradient-primary);
-    box-shadow: var(--shadow-jungle), 0 4px 0 hsl(140 55% 30%);
-  }
-
-  .btn-jungle:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-jungle), 0 6px 0 hsl(140 55% 30%);
-  }
-
-  /* Category badges */
-  .badge-jungle { @apply bg-gradient-to-r from-emerald-500 to-green-600 text-white; }
-  .badge-treasure { @apply bg-gradient-to-r from-amber-400 to-orange-500 text-white; }
-  .badge-ocean { @apply bg-gradient-to-r from-cyan-400 to-blue-500 text-white; }
-  .badge-sunset { @apply bg-gradient-to-r from-orange-400 to-red-500 text-white; }
-  .badge-earth { @apply bg-gradient-to-r from-amber-600 to-amber-800 text-white; }
-  .badge-sky { @apply bg-gradient-to-r from-sky-400 to-blue-400 text-white; }
-
-  /* Decorative leaf pattern */
-  .leaf-pattern {
-    position: relative;
-  }
-
-  .leaf-pattern::after {
-    content: '🍃';
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    font-size: 1rem;
-    opacity: 0.4;
-  }
+  /* Stat indicator colors */
+  .stat-positive { @apply text-success; }
+  .stat-negative { @apply text-destructive; }
 }
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 15px hsl(var(--secondary) / 0.3);
+    box-shadow: 0 0 20px hsl(195 90% 50% / 0.2);
   }
   50% {
-    box-shadow: 0 0 35px hsl(var(--secondary) / 0.6);
+    box-shadow: 0 0 40px hsl(195 90% 50% / 0.4);
   }
 }
 
@@ -284,23 +273,14 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes bounce-gentle {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
   }
 }
 
 @keyframes slide-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
@@ -311,7 +291,7 @@
 @keyframes scale-in {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -328,28 +308,27 @@
   }
 }
 
-/* Scrollbar Styling - Jungle theme */
+/* Modern Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-  border-radius: 5px;
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.7) 100%);
-  border-radius: 5px;
-  border: 2px solid hsl(var(--muted));
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary));
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 
 /* Selection styling */
 ::selection {
-  background: hsl(var(--secondary) / 0.35);
+  background: hsl(var(--primary) / 0.3);
   color: hsl(var(--foreground));
 }
