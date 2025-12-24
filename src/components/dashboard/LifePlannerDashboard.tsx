@@ -4,6 +4,7 @@ import { Quest, Habit, Goal, Stats, UserProfile } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+import { MusicPlayer } from '@/components/music/MusicPlayer';
 import heroBanner from '@/assets/hero-banner.jpg';
 import cardDaily from '@/assets/card-daily.jpg';
 import cardPlanners from '@/assets/card-planners.jpg';
@@ -295,38 +296,7 @@ export const LifePlannerDashboard = ({
         {/* Play Now Widget */}
         <div className="space-y-4">
           <h3 className="font-display text-xl text-foreground">— Play Now</h3>
-          <div className="card-gaming rounded-xl p-5 space-y-5 border border-border/50">
-            <div className="flex gap-4">
-              <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-secondary via-primary/80 to-primary flex items-center justify-center shadow-[0_0_25px_hsl(var(--secondary)/0.4)]">
-                <Music className="w-9 h-9 text-foreground drop-shadow-md" />
-              </div>
-              <div className="flex-1 pt-1">
-                <p className="font-display text-base text-foreground">Lofi Focus Mix</p>
-                <p className="text-sm text-muted-foreground font-body">Pro Chill</p>
-                <button className="mt-2.5 flex items-center gap-1.5 text-sm text-primary font-body hover:underline transition-all">
-                  <Play className="w-3.5 h-3.5" /> Save on Spotify
-                </button>
-              </div>
-            </div>
-            
-            {/* Mini Playlist */}
-            <div className="space-y-1">
-              {['Beats to Focus', 'Study Session', 'Deep Work', 'Calm Vibes'].map((track, i) => (
-                <div 
-                  key={track}
-                  className="flex items-center justify-between py-2.5 border-b border-border/20 last:border-0 group hover:bg-muted/20 -mx-2 px-2 rounded transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-primary text-sm">♫</span>
-                    <span className="text-sm font-body text-muted-foreground group-hover:text-foreground transition-colors">{track}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground/70 font-body">
-                    {`0${i + 2}:${20 + i * 13}`}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <MusicPlayer compact />
         </div>
       </div>
 
