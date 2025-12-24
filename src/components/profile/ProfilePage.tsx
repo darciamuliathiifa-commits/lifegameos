@@ -30,9 +30,10 @@ export const ProfilePage = ({ profile, stats, onUpdateProfile }: ProfilePageProp
 
   const xpProgress = (profile.currentXP / XP_PER_LEVEL) * 100;
 
-  const handleSave = () => {
-    onUpdateProfile({ name, title });
+  const handleSave = async () => {
+    await onUpdateProfile({ name, title });
     setIsEditing(false);
+    toast.success('Profil berhasil diperbarui!');
   };
 
   const handleCancel = () => {

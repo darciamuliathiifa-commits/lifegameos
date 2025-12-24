@@ -227,39 +227,43 @@ export const NotesPage = () => {
         />
       </div>
 
-      {/* Notes Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+      {/* Notes Grid - Compact on mobile with auto preview */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
         {filteredNotes.map((note) => (
           <div
             key={note.id}
             onClick={() => openNoteDetail(note)}
             className={cn(
-              "card-gaming rounded-lg md:rounded-xl p-3 md:p-4 space-y-2 md:space-y-3 group hover:ring-1 hover:ring-primary/50 transition-all cursor-pointer",
+              "card-gaming rounded-lg p-2.5 md:p-4 space-y-1.5 md:space-y-3 group hover:ring-1 hover:ring-primary/50 transition-all cursor-pointer",
               note.is_pinned && "ring-1 ring-accent/50"
             )}
           >
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-display text-foreground line-clamp-1 text-sm md:text-base">{note.title}</h3>
-              <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                {note.is_pinned && <Pin className="w-3 h-3 text-accent shrink-0 fill-accent" />}
+                <h3 className="font-display text-foreground line-clamp-1 text-xs md:text-base">{note.title}</h3>
+              </div>
+              <div className="flex gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0" onClick={(e) => e.stopPropagation()}>
                 <button onClick={() => togglePin(note)} className="p-1 hover:text-accent">
-                  <Pin className={cn("w-3.5 h-3.5 md:w-4 md:h-4", note.is_pinned && "fill-accent text-accent")} />
+                  <Pin className={cn("w-3 h-3 md:w-4 md:h-4", note.is_pinned && "fill-accent text-accent")} />
                 </button>
                 <button onClick={() => openEdit(note)} className="p-1 hover:text-primary">
-                  <Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <Edit2 className="w-3 h-3 md:w-4 md:h-4" />
                 </button>
                 <button onClick={() => deleteNote(note.id)} className="p-1 hover:text-destructive">
-                  <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
                 </button>
               </div>
             </div>
-            <p className="text-xs md:text-sm text-muted-foreground font-body line-clamp-2 md:line-clamp-3">
-              {note.content?.replace(/^##?\s+/gm, '').replace(/- \[[ x]\] /g, '• ') || 'No content'}
+            {/* Auto preview - more lines on mobile */}
+            <p className="text-[11px] md:text-sm text-muted-foreground font-body line-clamp-3 md:line-clamp-3">
+              {note.content?.replace(/^##?\s+/gm, '').replace(/- \[[ x]\] /g, '• ').substring(0, 150) || 'No content'}
             </p>
             <div className="flex items-center justify-between">
-              <Badge variant="outline" className={cn("text-[10px] md:text-xs", getCategoryColor(note.category))}>
+              <Badge variant="outline" className={cn("text-[9px] md:text-xs px-1.5 py-0", getCategoryColor(note.category))}>
                 {note.category}
               </Badge>
-              <p className="text-[10px] md:text-xs text-muted-foreground/70 font-body flex items-center gap-1">
+              <p className="text-[9px] md:text-xs text-muted-foreground/70 font-body flex items-center gap-1">
                 <Calendar className="w-2.5 h-2.5 md:w-3 md:h-3" />
                 {format(new Date(note.created_at), 'MMM d')}
               </p>

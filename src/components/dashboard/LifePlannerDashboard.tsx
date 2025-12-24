@@ -138,9 +138,26 @@ export const LifePlannerDashboard = ({
   
   // Quick add quest state
   const [isAddingQuest, setIsAddingQuest] = useState(false);
+  const [activeQuestType, setActiveQuestType] = useState<string | null>(null);
   const [newQuestTitle, setNewQuestTitle] = useState('');
   const [newQuestCategory, setNewQuestCategory] = useState('productivity');
   const [newQuestDifficulty, setNewQuestDifficulty] = useState('medium');
+
+  const openAddQuestForType = (typeId: string) => {
+    setActiveQuestType(typeId);
+    // Set default category based on quest type
+    if (typeId === 'daily') {
+      setNewQuestCategory('productivity');
+      setNewQuestDifficulty('easy');
+    } else if (typeId === 'side') {
+      setNewQuestCategory('learning');
+      setNewQuestDifficulty('medium');
+    } else if (typeId === 'urgent') {
+      setNewQuestCategory('productivity');
+      setNewQuestDifficulty('hard');
+    }
+    setIsAddingQuest(true);
+  };
 
   const handleQuickAddQuest = () => {
     if (!newQuestTitle.trim() || !onAddQuest) return;
@@ -381,7 +398,10 @@ export const LifePlannerDashboard = ({
             <Button 
               variant="gaming" 
               size="sm" 
-              onClick={() => setIsAddingQuest(true)} 
+              onClick={() => {
+                setActiveQuestType(null);
+                setIsAddingQuest(true);
+              }} 
               className="h-7 text-xs gap-1"
             >
               <Plus className="w-3 h-3" /> Misi Baru
@@ -392,6 +412,11 @@ export const LifePlannerDashboard = ({
         {/* Quick Add Quest Form */}
         {isAddingQuest && (
           <Card className="border-primary/30 bg-primary/5 p-3 space-y-3">
+            {activeQuestType && (
+              <div className="text-xs text-primary font-medium">
+                Menambah {questCategoryConfig.find(c => c.id === activeQuestType)?.label}
+              </div>
+            )}
             <Input
               placeholder="Judul misi..."
               value={newQuestTitle}
@@ -479,7 +504,7 @@ export const LifePlannerDashboard = ({
                     className="w-3 h-3 text-muted-foreground ml-1 hover:text-primary"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onNavigate('quests');
+                      openAddQuestForType(cat.id);
                     }}
                   />
                 </button>

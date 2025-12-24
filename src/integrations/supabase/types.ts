@@ -150,6 +150,7 @@ export type Database = {
           category: string
           completed_today: boolean
           created_at: string
+          difficulty: string | null
           icon: string | null
           id: string
           image_url: string | null
@@ -159,11 +160,13 @@ export type Database = {
           streak: number
           updated_at: string
           user_id: string
+          xp_reward: number | null
         }
         Insert: {
           category?: string
           completed_today?: boolean
           created_at?: string
+          difficulty?: string | null
           icon?: string | null
           id?: string
           image_url?: string | null
@@ -173,11 +176,13 @@ export type Database = {
           streak?: number
           updated_at?: string
           user_id: string
+          xp_reward?: number | null
         }
         Update: {
           category?: string
           completed_today?: boolean
           created_at?: string
+          difficulty?: string | null
           icon?: string | null
           id?: string
           image_url?: string | null
@@ -187,6 +192,7 @@ export type Database = {
           streak?: number
           updated_at?: string
           user_id?: string
+          xp_reward?: number | null
         }
         Relationships: []
       }

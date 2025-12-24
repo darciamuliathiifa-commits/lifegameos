@@ -1,5 +1,5 @@
-import { Check, Flame, Repeat } from 'lucide-react';
-import { Habit, REPEAT_LABELS, RepeatFrequency } from '@/types/game';
+import { Check, Flame, Repeat, Zap } from 'lucide-react';
+import { Habit, REPEAT_LABELS, RepeatFrequency, DIFFICULTY_LABELS, Difficulty } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { CategoryBadge } from '@/components/shared/CategoryBadge';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +12,13 @@ interface HabitCardProps {
   compact?: boolean;
   showImageUpload?: boolean;
 }
+
+const difficultyColors: Record<Difficulty, string> = {
+  easy: 'bg-green-500/20 text-green-400',
+  medium: 'bg-yellow-500/20 text-yellow-400',
+  hard: 'bg-red-500/20 text-red-400',
+  very_hard: 'bg-purple-500/20 text-purple-400',
+};
 
 export const HabitCard = ({ 
   habit, 
@@ -30,6 +37,9 @@ export const HabitCard = ({
       reader.readAsDataURL(file);
     }
   };
+
+  const difficulty = habit.difficulty || 'medium';
+  const xpReward = habit.xpReward || 25;
 
   if (compact) {
     return (
@@ -59,17 +69,15 @@ export const HabitCard = ({
             )}>
               {habit.name}
             </p>
-            <div className="flex items-center gap-2 text-xs">
+            <div className="flex items-center gap-2 text-xs flex-wrap">
               <div className="flex items-center gap-1 text-accent">
                 <Flame className="w-3 h-3" />
                 <span className="font-body">{habit.streak} hari</span>
               </div>
-              {habit.repeatFrequency && (
-                <Badge variant="outline" className="text-xs px-1.5 py-0">
-                  <Repeat className="w-2.5 h-2.5 mr-1" />
-                  {REPEAT_LABELS[habit.repeatFrequency as RepeatFrequency]}
-                </Badge>
-              )}
+              <div className="flex items-center gap-1 text-primary">
+                <Zap className="w-3 h-3" />
+                <span className="font-body">+{xpReward} XP</span>
+              </div>
             </div>
           </div>
         </div>
@@ -107,7 +115,12 @@ export const HabitCard = ({
         <div className="flex-1">
           <div className="flex items-start justify-between">
             <div>
-              <CategoryBadge category={habit.category} size="sm" />
+              <div className="flex items-center gap-2 flex-wrap">
+                <CategoryBadge category={habit.category} size="sm" />
+                <Badge variant="outline" className={cn("text-xs", difficultyColors[difficulty])}>
+                  +{xpReward} XP
+                </Badge>
+              </div>
               <h3 className={cn(
                 "font-display text-lg text-foreground mt-1",
                 habit.completedToday && "line-through"
@@ -136,12 +149,12 @@ export const HabitCard = ({
                 className="gap-2"
               >
                 <Check className="w-4 h-4" />
-                Selesai
+                Selesai (+{xpReward} XP)
               </Button>
             ) : (
               <span className="flex items-center gap-2 text-success font-body text-sm">
                 <Check className="w-4 h-4" />
-                Selesai hari ini!
+                Selesai hari ini! +{xpReward} XP
               </span>
             )}
           </div>

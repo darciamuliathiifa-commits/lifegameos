@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Habit, Category } from '@/types/game';
+import { Habit, Category, Difficulty, DIFFICULTY_XP } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -12,7 +12,7 @@ export type RepeatFrequency = 'daily' | 'weekly' | 'monthly';
 interface AddHabitDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAdd: (habit: Omit<Habit, 'id' | 'streak' | 'completedToday'> & { repeatFrequency: RepeatFrequency }) => void;
+  onAdd: (habit: Omit<Habit, 'id' | 'streak' | 'completedToday'> & { repeatFrequency: RepeatFrequency; difficulty: Difficulty; xpReward: number }) => void;
 }
 
 const categories: Category[] = ['health', 'productivity', 'social', 'learning', 'creative'];
@@ -32,12 +32,20 @@ const frequencyLabels: Record<RepeatFrequency, string> = {
   monthly: 'Setiap Bulan',
 };
 
+const difficultyLabels: Record<Difficulty, string> = {
+  easy: 'Mudah',
+  medium: 'Sedang',
+  hard: 'Sulit',
+  very_hard: 'Sangat Sulit',
+};
+
 export const AddHabitDialog = ({ open, onOpenChange, onAdd }: AddHabitDialogProps) => {
   const [name, setName] = useState('');
   const [icon, setIcon] = useState('💪');
   const [category, setCategory] = useState<Category>('health');
   const [image, setImage] = useState('');
   const [repeatFrequency, setRepeatFrequency] = useState<RepeatFrequency>('daily');
+  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +57,8 @@ export const AddHabitDialog = ({ open, onOpenChange, onAdd }: AddHabitDialogProp
       category,
       image: image || undefined,
       repeatFrequency,
+      difficulty,
+      xpReward: DIFFICULTY_XP[difficulty],
     });
 
     // Reset form
@@ -57,6 +67,7 @@ export const AddHabitDialog = ({ open, onOpenChange, onAdd }: AddHabitDialogProp
     setCategory('health');
     setImage('');
     setRepeatFrequency('daily');
+    setDifficulty('medium');
     onOpenChange(false);
   };
 
@@ -138,6 +149,28 @@ export const AddHabitDialog = ({ open, onOpenChange, onAdd }: AddHabitDialogProp
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          {/* Difficulty Selection */}
+          <div className="space-y-2">
+            <Label className="font-body text-sm text-muted-foreground">Tingkat Kesulitan (XP)</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {(['easy', 'medium', 'hard', 'very_hard'] as Difficulty[]).map(d => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDifficulty(d)}
+                  className={`p-2 rounded-lg text-xs font-body transition-all ${
+                    difficulty === d
+                      ? 'bg-primary/30 border border-primary shadow-[0_0_10px_hsl(var(--primary)/0.3)]'
+                      : 'bg-muted border border-transparent hover:bg-muted/80'
+                  }`}
+                >
+                  <div className="font-medium">{difficultyLabels[d]}</div>
+                  <div className="text-muted-foreground">+{DIFFICULTY_XP[d]} XP</div>
+                </button>
+              ))}
             </div>
           </div>
 
