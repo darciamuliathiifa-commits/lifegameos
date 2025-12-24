@@ -13,6 +13,7 @@ import { InventoryPage } from '@/components/inventory/InventoryPage';
 import { PrayersPage } from '@/components/prayers/PrayersPage';
 import { SecondBrainPage } from '@/components/secondbrain/SecondBrainPage';
 import { MusicPage } from '@/components/music/MusicPage';
+import { PomodoroPage } from '@/components/pomodoro/PomodoroPage';
 import { useSupabaseGameStore } from '@/hooks/useSupabaseGameStore';
 import { Helmet } from 'react-helmet-async';
 import { Loader2 } from 'lucide-react';
@@ -91,6 +92,8 @@ const DashboardPage = () => {
         return <PrayersPage />;
       case 'music':
         return <MusicPage />;
+      case 'pomodoro':
+        return <PomodoroPage />;
       case 'profile':
         return (
           <ProfilePage
