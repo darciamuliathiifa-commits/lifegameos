@@ -35,8 +35,13 @@ export const SecondBrainPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'project' | 'area' | 'resource' | 'archive'>('project');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [form, setForm] = useState({
-    title: '', content: '', type: 'project' as const, status: 'not_started'
+  const [form, setForm] = useState<{
+    title: string;
+    content: string;
+    type: 'project' | 'area' | 'resource' | 'archive';
+    status: string;
+  }>({
+    title: '', content: '', type: 'project', status: 'not_started'
   });
 
   useEffect(() => {
