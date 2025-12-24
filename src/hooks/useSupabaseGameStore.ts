@@ -38,6 +38,8 @@ export interface Habit {
   completed_today: boolean;
   image_url: string | null;
   repeat_frequency?: string;
+  difficulty?: string;
+  xp_reward?: number;
 }
 
 export interface Goal {
@@ -253,6 +255,8 @@ export const useSupabaseGameStore = () => {
     const habit = habits.find(h => h.id === habitId);
     if (!habit || habit.completed_today) return;
 
+    const xpReward = habit.xp_reward || 20;
+
     const { error } = await supabase
       .from('habits')
       .update({ 
@@ -264,7 +268,7 @@ export const useSupabaseGameStore = () => {
 
     if (!error) {
       setHabits(habits.map(h => h.id === habitId ? { ...h, completed_today: true, streak: h.streak + 1 } : h));
-      await addXP(20);
+      await addXP(xpReward);
       
       const newStreak = stats.current_streak + 1;
       await supabase
@@ -282,11 +286,11 @@ export const useSupabaseGameStore = () => {
         current_streak: newStreak,
         longest_streak: Math.max(newStreak, stats.longest_streak)
       });
-      toast.success('Kebiasaan selesai! +20 XP');
+      toast.success(`Kebiasaan selesai! +${xpReward} XP`);
     }
   };
 
-  const addHabit = async (habit: { name: string; icon: string; category: string; image?: string; repeatFrequency?: string }) => {
+  const addHabit = async (habit: { name: string; icon: string; category: string; image?: string; repeatFrequency?: string; difficulty?: string; xpReward?: number }) => {
     if (!user) return;
 
     const { data, error } = await supabase
@@ -298,6 +302,8 @@ export const useSupabaseGameStore = () => {
         category: habit.category,
         image_url: habit.image || null,
         repeat_frequency: habit.repeatFrequency || 'daily',
+        difficulty: habit.difficulty || 'medium',
+        xp_reward: habit.xpReward || 25,
       })
       .select()
       .single();
@@ -474,6 +480,8 @@ export const useSupabaseGameStore = () => {
     category: h.category as 'health' | 'learning' | 'productivity' | 'social' | 'creative',
     image: h.image_url || undefined,
     repeatFrequency: (h.repeat_frequency || 'daily') as 'daily' | 'weekly' | 'monthly',
+    difficulty: (h.difficulty || 'medium') as 'easy' | 'medium' | 'hard' | 'very_hard',
+    xpReward: h.xp_reward || 25,
   }));
 
   const transformedGoals = goals.map(g => ({
@@ -535,12 +543,12 @@ export const useSupabaseGameStore = () => {
     updateGoalProgress,
     deleteGoal,
     updateGoalImage,
-    updateProfile: (updates: Partial<{ name: string; title: string; avatar?: string }>) => {
-      return updateProfile({
-        name: updates.name,
-        title: updates.title,
-        avatar_url: updates.avatar,
-      });
+    updateProfile: async (updates: Partial<{ name: string; title: string; avatar?: string }>) => {
+      const dbUpdates: Partial<{ name: string; title: string; avatar_url: string }> = {};
+      if (updates.name !== undefined) dbUpdates.name = updates.name;
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.avatar !== undefined) dbUpdates.avatar_url = updates.avatar;
+      return updateProfile(dbUpdates);
     },
     uploadImage,
   };

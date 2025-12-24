@@ -1,17 +1,17 @@
-export type Difficulty = 'easy' | 'medium' | 'hard' | 'special';
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'very_hard';
 
 export const DIFFICULTY_XP: Record<Difficulty, number> = {
-  easy: 25,
-  medium: 50,
-  hard: 100,
-  special: 200,
+  easy: 10,
+  medium: 25,
+  hard: 50,
+  very_hard: 100,
 };
 
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
   easy: 'Mudah',
   medium: 'Sedang',
   hard: 'Sulit',
-  special: 'Spesial',
+  very_hard: 'Sangat Sulit',
 };
 
 export interface Quest {
@@ -43,6 +43,8 @@ export interface Habit {
   category: 'health' | 'productivity' | 'social' | 'learning' | 'creative';
   image?: string;
   repeatFrequency?: RepeatFrequency;
+  difficulty?: Difficulty;
+  xpReward?: number;
 }
 
 export interface Goal {
