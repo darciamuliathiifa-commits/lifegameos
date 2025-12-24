@@ -14,6 +14,8 @@ import { PrayersPage } from '@/components/prayers/PrayersPage';
 import { SecondBrainPage } from '@/components/secondbrain/SecondBrainPage';
 import { MusicPage } from '@/components/music/MusicPage';
 import { PomodoroPage } from '@/components/pomodoro/PomodoroPage';
+import { TemantiketSpacePage } from '@/components/spaces/TemantiketSpacePage';
+import { AIGYPTSpacePage } from '@/components/spaces/AIGYPTSpacePage';
 import { useSupabaseGameStore } from '@/hooks/useSupabaseGameStore';
 import { Helmet } from 'react-helmet-async';
 import { Loader2 } from 'lucide-react';
@@ -94,6 +96,10 @@ const DashboardPage = () => {
         return <MusicPage />;
       case 'pomodoro':
         return <PomodoroPage />;
+      case 'temantiket':
+        return <TemantiketSpacePage />;
+      case 'aigypt':
+        return <AIGYPTSpacePage />;
       case 'profile':
         return (
           <ProfilePage
