@@ -1,4 +1,4 @@
-import { Home, Target, Zap, Trophy, User, Settings, Flame } from 'lucide-react';
+import { Home, Target, Zap, Trophy, User, Settings, Flame, FileText, Wallet, Package, Moon, Brain, Music } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -12,6 +12,12 @@ const navItems = [
   { id: 'habits', label: 'Habits', icon: Flame },
   { id: 'goals', label: 'Goals', icon: Zap },
   { id: 'achievements', label: 'Achievements', icon: Trophy },
+  { id: 'notes', label: 'Notes', icon: FileText },
+  { id: 'secondbrain', label: 'Second Brain', icon: Brain },
+  { id: 'finance', label: 'Finance', icon: Wallet },
+  { id: 'inventory', label: 'Inventory', icon: Package },
+  { id: 'prayers', label: 'Doa Harian', icon: Moon },
+  { id: 'music', label: 'Music', icon: Music },
   { id: 'profile', label: 'Profile', icon: User },
 ];
 
@@ -31,7 +37,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-2 lg:px-3 space-y-1">
+      <nav className="flex-1 py-4 px-2 lg:px-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;

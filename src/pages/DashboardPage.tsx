@@ -7,6 +7,12 @@ import { HabitsPage } from '@/components/habits/HabitsPage';
 import { GoalsPage } from '@/components/goals/GoalsPage';
 import { AchievementsPage } from '@/components/achievements/AchievementsPage';
 import { ProfilePage } from '@/components/profile/ProfilePage';
+import { NotesPage } from '@/components/notes/NotesPage';
+import { FinancePage } from '@/components/finance/FinancePage';
+import { InventoryPage } from '@/components/inventory/InventoryPage';
+import { PrayersPage } from '@/components/prayers/PrayersPage';
+import { SecondBrainPage } from '@/components/secondbrain/SecondBrainPage';
+import { MusicPage } from '@/components/music/MusicPage';
 import { useSupabaseGameStore } from '@/hooks/useSupabaseGameStore';
 import { Helmet } from 'react-helmet-async';
 import { Loader2 } from 'lucide-react';
@@ -73,6 +79,18 @@ const DashboardPage = () => {
         );
       case 'achievements':
         return <AchievementsPage achievements={store.achievements} />;
+      case 'notes':
+        return <NotesPage />;
+      case 'secondbrain':
+        return <SecondBrainPage />;
+      case 'finance':
+        return <FinancePage />;
+      case 'inventory':
+        return <InventoryPage />;
+      case 'prayers':
+        return <PrayersPage />;
+      case 'music':
+        return <MusicPage />;
       case 'profile':
         return (
           <ProfilePage
@@ -90,7 +108,7 @@ const DashboardPage = () => {
     <>
       <Helmet>
         <title>Dashboard - LifeGame OS Hub</title>
-        <meta name="description" content="Your personal life operating system. Track quests, habits, goals, and achievements." />
+        <meta name="description" content="Your personal life operating system." />
       </Helmet>
       
       <div className="min-h-screen bg-background">
