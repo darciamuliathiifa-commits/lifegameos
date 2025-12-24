@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { calculateLevel, XP_PER_LEVEL } from '@/types/game';
+import { calculateLevel, XP_PER_LEVEL, getTitleForLevel } from '@/types/game';
 
 export interface Profile {
   id: string;
@@ -123,14 +123,22 @@ export const useSupabaseGameStore = () => {
 
     const newTotalXP = profile.total_xp + amount;
     const { level, currentXP } = calculateLevel(newTotalXP);
+    const newTitle = getTitleForLevel(level);
+    const leveledUp = level > profile.level;
 
     const { error } = await supabase
       .from('profiles')
-      .update({ total_xp: newTotalXP, level, current_xp: currentXP })
+      .update({ total_xp: newTotalXP, level, current_xp: currentXP, title: newTitle })
       .eq('user_id', user.id);
 
     if (!error) {
-      setProfile({ ...profile, total_xp: newTotalXP, level, current_xp: currentXP });
+      setProfile({ ...profile, total_xp: newTotalXP, level, current_xp: currentXP, title: newTitle });
+      
+      if (leveledUp) {
+        toast.success(`🎉 Naik Level! Sekarang Level ${level}`, {
+          description: `Gelar baru: ${newTitle}`
+        });
+      }
       
       await supabase
         .from('user_stats')
@@ -163,7 +171,7 @@ export const useSupabaseGameStore = () => {
         .eq('user_id', user.id);
       
       setStats({ ...stats, quests_completed: stats.quests_completed + 1 });
-      toast.success(`Quest completed! +${quest.xp_reward} XP`);
+      toast.success(`Misi selesai! +${quest.xp_reward} XP`);
     }
   };
 
@@ -185,7 +193,32 @@ export const useSupabaseGameStore = () => {
 
     if (!error && data) {
       setQuests([data, ...quests]);
-      toast.success('Quest added!');
+      toast.success('Misi ditambahkan!');
+    }
+  };
+
+  const updateQuest = async (questId: string, updates: { title?: string; description?: string; xpReward?: number; category?: string }) => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('quests')
+      .update({
+        title: updates.title,
+        description: updates.description,
+        xp_reward: updates.xpReward,
+        category: updates.category,
+      })
+      .eq('id', questId);
+
+    if (!error) {
+      setQuests(quests.map(q => q.id === questId ? { 
+        ...q, 
+        title: updates.title || q.title,
+        description: updates.description || q.description,
+        xp_reward: updates.xpReward || q.xp_reward,
+        category: updates.category || q.category,
+      } : q));
+      toast.success('Misi diperbarui!');
     }
   };
 
@@ -193,7 +226,7 @@ export const useSupabaseGameStore = () => {
     const { error } = await supabase.from('quests').delete().eq('id', questId);
     if (!error) {
       setQuests(quests.filter(q => q.id !== questId));
-      toast.success('Quest deleted');
+      toast.success('Misi dihapus');
     }
   };
 
@@ -244,7 +277,7 @@ export const useSupabaseGameStore = () => {
         current_streak: newStreak,
         longest_streak: Math.max(newStreak, stats.longest_streak)
       });
-      toast.success('Habit completed! +20 XP');
+      toast.success('Kebiasaan selesai! +20 XP');
     }
   };
 
@@ -265,7 +298,7 @@ export const useSupabaseGameStore = () => {
 
     if (!error && data) {
       setHabits([data, ...habits]);
-      toast.success('Habit added!');
+      toast.success('Kebiasaan ditambahkan!');
     }
   };
 
@@ -273,7 +306,7 @@ export const useSupabaseGameStore = () => {
     const { error } = await supabase.from('habits').delete().eq('id', habitId);
     if (!error) {
       setHabits(habits.filter(h => h.id !== habitId));
-      toast.success('Habit deleted');
+      toast.success('Kebiasaan dihapus');
     }
   };
 
@@ -484,6 +517,7 @@ export const useSupabaseGameStore = () => {
     stats: transformedStats,
     completeQuest,
     addQuest,
+    updateQuest,
     deleteQuest,
     updateQuestImage,
     completeHabit,

@@ -1,4 +1,4 @@
-import { Check, Zap, Clock, Image as ImageIcon } from 'lucide-react';
+import { Check, Zap, Clock, Image as ImageIcon, Edit2, Trash2 } from 'lucide-react';
 import { Quest } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { CategoryBadge } from '@/components/shared/CategoryBadge';
@@ -7,13 +7,17 @@ import { cn } from '@/lib/utils';
 interface QuestCardProps {
   quest: Quest;
   onComplete: (id: string) => void;
+  onEdit?: (quest: Quest) => void;
+  onDelete?: (id: string) => void;
   onImageUpload?: (id: string, image: string) => void;
   showImageUpload?: boolean;
 }
 
 export const QuestCard = ({ 
   quest, 
-  onComplete, 
+  onComplete,
+  onEdit,
+  onDelete,
   onImageUpload,
   showImageUpload = false 
 }: QuestCardProps) => {
@@ -62,7 +66,7 @@ export const QuestCard = ({
                 {quest.dueDate && (
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Clock className="w-3 h-3" />
-                    {new Date(quest.dueDate).toLocaleDateString()}
+                    {new Date(quest.dueDate).toLocaleDateString('id-ID')}
                   </span>
                 )}
               </div>
@@ -87,19 +91,43 @@ export const QuestCard = ({
           {/* Action */}
           <div className="mt-4 flex items-center gap-3">
             {!quest.completed ? (
-              <Button
-                variant="gaming"
-                size="sm"
-                onClick={() => onComplete(quest.id)}
-                className="gap-2"
-              >
-                <Check className="w-4 h-4" />
-                Complete Quest
-              </Button>
+              <>
+                <Button
+                  variant="gaming"
+                  size="sm"
+                  onClick={() => onComplete(quest.id)}
+                  className="gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  Selesaikan
+                </Button>
+                {onEdit && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onEdit(quest)}
+                    className="gap-2"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                    Edit
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onDelete(quest.id)}
+                    className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Hapus
+                  </Button>
+                )}
+              </>
             ) : (
               <span className="flex items-center gap-2 text-success font-body text-sm">
                 <Check className="w-4 h-4" />
-                Completed
+                Selesai
               </span>
             )}
           </div>
