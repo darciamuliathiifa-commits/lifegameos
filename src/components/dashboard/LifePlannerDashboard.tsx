@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Plus, ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Loader2, Check, X } from 'lucide-react';
+import { Plus, ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Loader2, Check, X, Sparkles } from 'lucide-react';
 import { Quest, Habit, Goal, Stats, UserProfile } from '@/types/game';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
 import { PrayerTimesWidget } from '@/components/prayers/PrayerTimesWidget';
@@ -313,8 +315,74 @@ export const LifePlannerDashboard = ({
 
   return (
     <div className="space-y-6 md:space-y-8 pb-8">
+      {/* Quest Add Dialog */}
+      <Dialog open={isAddingQuest} onOpenChange={setIsAddingQuest}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              {activeQuestType ? `Tambah ${questCategoryConfig.find(c => c.id === activeQuestType)?.label}` : 'Misi Baru'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Judul Misi</label>
+              <Input
+                placeholder="Masukkan judul misi..."
+                value={newQuestTitle}
+                onChange={(e) => setNewQuestTitle(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Kategori</label>
+                <Select value={newQuestCategory} onValueChange={setNewQuestCategory}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="health">🏃 Health</SelectItem>
+                    <SelectItem value="productivity">💼 Productivity</SelectItem>
+                    <SelectItem value="learning">📚 Learning</SelectItem>
+                    <SelectItem value="creative">🎨 Creative</SelectItem>
+                    <SelectItem value="social">👥 Social</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Kesulitan</label>
+                <Select value={newQuestDifficulty} onValueChange={setNewQuestDifficulty}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="easy">Easy (+10 XP)</SelectItem>
+                    <SelectItem value="medium">Medium (+25 XP)</SelectItem>
+                    <SelectItem value="hard">Hard (+50 XP)</SelectItem>
+                    <SelectItem value="very_hard">Very Hard (+100 XP)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="p-3 rounded-lg glass-card">
+              <p className="text-xs text-muted-foreground">XP Reward</p>
+              <p className="text-lg font-display font-bold text-primary">
+                ⭐ {{ 'easy': 10, 'medium': 25, 'hard': 50, 'very_hard': 100 }[newQuestDifficulty] || 25} XP
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddingQuest(false)}>Batal</Button>
+            <Button variant="gradient" onClick={handleQuickAddQuest} disabled={!newQuestTitle.trim()}>
+              <Plus className="w-4 h-4" /> Buat Misi
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* User Profile Card - Mobile First */}
-      <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent rounded-xl md:rounded-2xl p-4 md:p-6 border border-border/50 animate-fade-in">
+      <div className="glass-profile rounded-xl md:rounded-2xl p-4 md:p-6 animate-fade-in">
         <div className="flex items-center gap-3 md:gap-4">
           {/* Avatar */}
           <div className="relative">
@@ -396,7 +464,7 @@ export const LifePlannerDashboard = ({
               <MoreHorizontal className="w-3 h-3" />
             </Button>
             <Button 
-              variant="gaming" 
+              variant="gradient" 
               size="sm" 
               onClick={() => {
                 setActiveQuestType(null);
@@ -408,58 +476,6 @@ export const LifePlannerDashboard = ({
             </Button>
           </div>
         </div>
-
-        {/* Quick Add Quest Form */}
-        {isAddingQuest && (
-          <Card className="border-primary/30 bg-primary/5 p-3 space-y-3">
-            {activeQuestType && (
-              <div className="text-xs text-primary font-medium">
-                Menambah {questCategoryConfig.find(c => c.id === activeQuestType)?.label}
-              </div>
-            )}
-            <Input
-              placeholder="Judul misi..."
-              value={newQuestTitle}
-              onChange={(e) => setNewQuestTitle(e.target.value)}
-              className="h-9 text-sm"
-              autoFocus
-              onKeyDown={(e) => e.key === 'Enter' && handleQuickAddQuest()}
-            />
-            <div className="flex gap-2 flex-wrap">
-              <Select value={newQuestCategory} onValueChange={setNewQuestCategory}>
-                <SelectTrigger className="h-8 text-xs w-28">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="health">🏃 Health</SelectItem>
-                  <SelectItem value="productivity">💼 Productivity</SelectItem>
-                  <SelectItem value="learning">📚 Learning</SelectItem>
-                  <SelectItem value="creative">🎨 Creative</SelectItem>
-                  <SelectItem value="social">👥 Social</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={newQuestDifficulty} onValueChange={setNewQuestDifficulty}>
-                <SelectTrigger className="h-8 text-xs w-28">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="easy">Easy (+10 XP)</SelectItem>
-                  <SelectItem value="medium">Medium (+25 XP)</SelectItem>
-                  <SelectItem value="hard">Hard (+50 XP)</SelectItem>
-                  <SelectItem value="very_hard">Very Hard (+100 XP)</SelectItem>
-                </SelectContent>
-              </Select>
-              <div className="flex gap-1 ml-auto">
-                <Button size="sm" variant="outline" className="h-8 w-8 p-0" onClick={() => setIsAddingQuest(false)}>
-                  <X className="w-4 h-4" />
-                </Button>
-                <Button size="sm" variant="gaming" className="h-8 px-3 gap-1" onClick={handleQuickAddQuest} disabled={!newQuestTitle.trim()}>
-                  <Check className="w-4 h-4" /> Tambah
-                </Button>
-              </div>
-            </div>
-          </Card>
-        )}
 
         {/* Filter Tabs */}
         <div className="flex items-center gap-2 text-xs overflow-x-auto pb-1 scrollbar-none">

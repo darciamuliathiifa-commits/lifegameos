@@ -25,7 +25,7 @@ export const Header = ({ profile }: HeaderProps) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 lg:left-64 right-0 z-30 h-14 md:h-16 bg-card/80 backdrop-blur-xl border-b border-border px-3 md:px-4 lg:px-6 flex items-center justify-between">
+    <header className="fixed top-0 left-0 lg:left-64 right-0 z-30 h-14 md:h-16 glass-header px-3 md:px-4 lg:px-6 flex items-center justify-between">
       {/* Spacer for mobile menu button */}
       <div className="w-10 lg:hidden" />
 
@@ -40,7 +40,7 @@ export const Header = ({ profile }: HeaderProps) => {
       {/* Right Side */}
       <div className="flex items-center gap-2 md:gap-3 lg:gap-4 ml-auto">
         {/* Search */}
-        <div className="hidden lg:flex items-center gap-2 bg-muted/50 border border-border rounded-lg px-3 py-2 w-52 transition-all focus-within:border-primary/50 focus-within:bg-card">
+        <div className="hidden lg:flex items-center gap-2 glass-input rounded-xl px-3 py-2 w-52 transition-all focus-within:border-primary/50">
           <Search className="w-4 h-4 text-muted-foreground" />
           <input
             type="text"
@@ -50,10 +50,10 @@ export const Header = ({ profile }: HeaderProps) => {
         </div>
 
         {/* XP Bar */}
-        <div className="hidden lg:flex items-center gap-3 px-3 py-1.5 rounded-lg bg-muted/50 border border-border">
+        <div className="hidden lg:flex items-center gap-3 px-3 py-1.5 rounded-xl glass-card">
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-primary">Lv.{profile.level}</span>
-            <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+            <div className="w-20 h-1.5 bg-muted/50 rounded-full overflow-hidden">
               <div
                 className="h-full progress-bar rounded-full transition-all duration-500"
                 style={{ width: `${xpProgress}%` }}
@@ -66,16 +66,16 @@ export const Header = ({ profile }: HeaderProps) => {
         </div>
 
         {/* Notifications */}
-        <button className="relative p-2 rounded-lg hover:bg-muted/60 transition-colors border border-transparent hover:border-border">
+        <button className="relative p-2 rounded-xl glass-card hover:border-primary/30 transition-all">
           <Bell className="w-5 h-5 text-muted-foreground" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full animate-pulse" />
         </button>
 
         {/* Profile Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2.5 outline-none p-1.5 rounded-lg hover:bg-muted/40 transition-colors">
-              <Avatar className="w-8 h-8 border border-border">
+            <button className="flex items-center gap-2.5 outline-none p-1.5 rounded-xl glass-card hover:border-primary/30 transition-all">
+              <Avatar className="w-8 h-8 border border-primary/20">
                 <AvatarImage src={profile.avatar} alt={profile.name} />
                 <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground font-display text-xs font-semibold">
                   {profile.name.split(' ').map(n => n[0]).join('')}
@@ -87,7 +87,7 @@ export const Header = ({ profile }: HeaderProps) => {
               </div>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuContent align="end" className="w-44 glass-popover">
             <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
