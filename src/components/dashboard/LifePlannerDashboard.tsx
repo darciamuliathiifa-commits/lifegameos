@@ -74,13 +74,19 @@ const quickMenuItems: QuickMenuItem[] = [
   { name: 'Health', Icon: IconHeart, category: 'health', defaultContent: '## Health Tracker\n\n### Daily Health Log\n- Sleep: hours\n- Water: glasses\n- Exercise: \n- Mood: \n\n### Notes\n- ' },
 ];
 
-// Quick Quest Categories for dashboard
-const quickQuestCategories = [
-  { id: 'health', label: 'Kesehatan', icon: '💪', color: 'from-emerald-500/20 to-green-600/20', xp: 25 },
-  { id: 'productivity', label: 'Produktivitas', icon: '⚡', color: 'from-blue-500/20 to-cyan-500/20', xp: 50 },
-  { id: 'learning', label: 'Pembelajaran', icon: '📚', color: 'from-purple-500/20 to-indigo-500/20', xp: 50 },
-  { id: 'creative', label: 'Kreativitas', icon: '🎨', color: 'from-amber-500/20 to-orange-500/20', xp: 25 },
+// Quest Category Config
+const questCategoryConfig = [
+  { id: 'daily', label: 'Daily Quest', icon: '🔵', color: 'text-blue-400', bgColor: 'bg-blue-500/20' },
+  { id: 'side', label: 'Side Quest', icon: '🟠', color: 'text-orange-400', bgColor: 'bg-orange-500/20' },
+  { id: 'urgent', label: 'Urgent Quest', icon: '🔴', color: 'text-red-400', bgColor: 'bg-red-500/20' },
 ];
+
+const difficultyConfig: Record<string, { label: string; color: string }> = {
+  'easy': { label: 'Easy', color: 'bg-success/20 text-success' },
+  'medium': { label: 'Medium', color: 'bg-secondary/20 text-secondary' },
+  'hard': { label: 'Hard', color: 'bg-destructive/20 text-destructive' },
+  'very_hard': { label: 'Very Hard', color: 'bg-accent/20 text-accent' },
+};
 
 const overviewTabs = [
   { name: 'Todo', Icon: IconCheck },
@@ -123,6 +129,16 @@ export const LifePlannerDashboard = ({
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isNoteSheetOpen, setIsNoteSheetOpen] = useState(false);
   const [isCreatingNote, setIsCreatingNote] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(['daily', 'side', 'urgent']);
+  const [isCompactCalendar, setIsCompactCalendar] = useState(true);
+
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(c => c !== categoryId) 
+        : [...prev, categoryId]
+    );
+  };
 
   useEffect(() => {
     if (user) {
@@ -320,29 +336,127 @@ export const LifePlannerDashboard = ({
         </div>
       </div>
 
-      {/* Quick Quest Add Section */}
+      {/* Quest Board Section - Like Notion */}
       <div className="space-y-3 px-1 md:px-2 animate-slide-up" style={{ animationDelay: '100ms' }}>
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-base md:text-lg text-foreground">Tambah Misi Cepat</h2>
-          <Button variant="ghost" size="sm" onClick={() => onNavigate('quests')} className="text-xs text-muted-foreground">
-            Lihat Semua →
-          </Button>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-          {quickQuestCategories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => onNavigate('quests')}
-              className={cn(
-                "p-3 md:p-4 rounded-lg md:rounded-xl border border-primary/20 bg-gradient-to-br transition-all hover:scale-[1.02] hover:border-primary/40",
-                cat.color
-              )}
+          <div className="flex items-center gap-2">
+            <IconTarget className="w-4 h-4 text-primary" size={16} />
+            <h2 className="font-display text-base md:text-lg text-foreground">Quest</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 hidden sm:flex">
+              <MoreHorizontal className="w-3 h-3" />
+            </Button>
+            <Button 
+              variant="gaming" 
+              size="sm" 
+              onClick={() => onNavigate('quests')} 
+              className="h-7 text-xs gap-1"
             >
-              <div className="text-2xl md:text-3xl mb-2">{cat.icon}</div>
-              <p className="text-xs md:text-sm font-display text-foreground">{cat.label}</p>
-              <p className="text-[10px] md:text-xs text-primary mt-1">+{cat.xp} XP</p>
-            </button>
-          ))}
+              <Plus className="w-3 h-3" /> New
+            </Button>
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-2 text-xs overflow-x-auto pb-1 scrollbar-none">
+          <button className="px-3 py-1.5 rounded-md bg-muted text-foreground font-medium whitespace-nowrap flex items-center gap-1">
+            <span className="w-3 h-3 grid grid-cols-2 gap-0.5">
+              <span className="w-1 h-1 bg-foreground rounded-sm" />
+              <span className="w-1 h-1 bg-foreground rounded-sm" />
+              <span className="w-1 h-1 bg-foreground rounded-sm" />
+              <span className="w-1 h-1 bg-foreground rounded-sm" />
+            </span>
+            Uncompleted
+          </button>
+          <button className="px-3 py-1.5 text-muted-foreground hover:text-foreground whitespace-nowrap">Today</button>
+          <button className="px-3 py-1.5 text-muted-foreground hover:text-foreground whitespace-nowrap">3 more...</button>
+        </div>
+
+        {/* Collapsible Quest Categories */}
+        <div className="space-y-2">
+          {questCategoryConfig.map((cat) => {
+            const categoryQuests = quests.filter(q => {
+              if (cat.id === 'daily') return q.category === 'health' || q.category === 'productivity';
+              if (cat.id === 'side') return q.category === 'learning' || q.category === 'creative';
+              if (cat.id === 'urgent') return q.xpReward >= 50;
+              return false;
+            }).filter(q => !q.completed);
+            const isExpanded = expandedCategories.includes(cat.id);
+            
+            return (
+              <div key={cat.id} className="space-y-2">
+                {/* Category Header */}
+                <button 
+                  onClick={() => toggleCategory(cat.id)}
+                  className="flex items-center gap-2 text-sm hover:opacity-80 transition-opacity w-full text-left"
+                >
+                  <ChevronDown className={cn(
+                    "w-3 h-3 text-muted-foreground transition-transform",
+                    !isExpanded && "-rotate-90"
+                  )} />
+                  <span className={cn("text-xs font-medium", cat.color)}>{cat.icon} {cat.label}</span>
+                  <MoreHorizontal className="w-3 h-3 text-muted-foreground ml-1 hidden sm:block" />
+                  <Plus 
+                    className="w-3 h-3 text-muted-foreground ml-1 hover:text-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNavigate('quests');
+                    }}
+                  />
+                </button>
+
+                {/* Quest Cards */}
+                {isExpanded && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pl-4 md:pl-5">
+                    {categoryQuests.slice(0, 4).map((quest) => {
+                      const difficulty = quest.difficulty || 'medium';
+                      const diffConfig = difficultyConfig[difficulty] || difficultyConfig['medium'];
+                      return (
+                        <div 
+                          key={quest.id}
+                          className="card-gaming rounded-lg p-3 space-y-2 group hover:border-primary/30 transition-colors cursor-pointer"
+                          onClick={() => onCompleteQuest(quest.id)}
+                        >
+                          <h4 className="font-display text-sm text-foreground line-clamp-2">{quest.title}</h4>
+                          {quest.dueDate && (
+                            <p className="text-[10px] text-muted-foreground">
+                              {format(new Date(quest.dueDate), 'MMM d, yyyy')}
+                            </p>
+                          )}
+                          <div className="flex flex-wrap gap-1">
+                            <span className={cn("text-[10px] px-1.5 py-0.5 rounded", cat.bgColor, cat.color)}>
+                              {cat.label}
+                            </span>
+                            <span className={cn("text-[10px] px-1.5 py-0.5 rounded", diffConfig.color)}>
+                              {diffConfig.label}
+                            </span>
+                          </div>
+                          <button 
+                            className="text-[10px] text-muted-foreground hover:text-primary border border-border/50 rounded px-2 py-1 w-full transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onCompleteQuest(quest.id);
+                            }}
+                          >
+                            Complete!
+                          </button>
+                        </div>
+                      );
+                    })}
+                    
+                    {/* New Page Button */}
+                    <button 
+                      onClick={() => onNavigate('quests')}
+                      className="border border-dashed border-border/50 rounded-lg p-3 flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground hover:border-border transition-colors min-h-[100px]"
+                    >
+                      <Plus className="w-3 h-3" /> New page
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -492,53 +606,45 @@ export const LifePlannerDashboard = ({
       </div>
 
       {/* Calendar & Upcoming Section */}
-      <div className="grid lg:grid-cols-3 gap-6 px-2 animate-slide-up" style={{ animationDelay: '400ms' }}>
+      <div className="grid lg:grid-cols-3 gap-4 md:gap-6 px-1 md:px-2 animate-slide-up" style={{ animationDelay: '400ms' }}>
         {/* Calendar */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">—</span>
-            <h2 className="font-display text-lg text-foreground">Calendar</h2>
-          </div>
-
-          <div className="flex items-center gap-1 flex-wrap">
-            {overviewTabs.slice(0, 4).map((tab) => (
-              <button
-                key={tab.name}
-                className={cn(
-                  "px-3 py-1.5 rounded-md text-sm flex items-center gap-1.5 transition-colors",
-                  tab.name === 'Todo'
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <tab.Icon className="w-3.5 h-3.5" size={14} />
-                {tab.name}
-              </button>
-            ))}
-            <button className="px-3 py-1.5 text-sm text-muted-foreground">2 more...</button>
+        <div className="lg:col-span-2 space-y-3 md:space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">—</span>
+              <h2 className="font-display text-base md:text-lg text-foreground">Calendar</h2>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setIsCompactCalendar(!isCompactCalendar)}
+              className="md:hidden text-xs text-muted-foreground"
+            >
+              {isCompactCalendar ? 'Expand' : 'Compact'}
+            </Button>
           </div>
 
           <Card className="border-border/50">
-            <CardContent className="py-5">
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-display text-lg text-foreground">{monthName}</span>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="text-xs gap-1.5">
-                    <IconCalendar className="w-3 h-3" size={12} /> Open in Calendar
+            <CardContent className="py-3 md:py-5">
+              <div className="flex items-center justify-between mb-3 md:mb-4">
+                <span className="font-display text-sm md:text-lg text-foreground">{monthName}</span>
+                <div className="flex items-center gap-1 md:gap-2">
+                  <Button variant="outline" size="sm" className="text-[10px] md:text-xs gap-1 h-7 hidden md:flex">
+                    <IconCalendar className="w-3 h-3" size={12} /> Open
                   </Button>
                   <Button 
                     variant="ghost" 
                     size="icon" 
                     onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} 
-                    className="h-8 w-8"
+                    className="h-6 w-6 md:h-8 md:w-8"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                   <Button 
                     variant="outline" 
                     size="sm" 
                     onClick={() => setCurrentMonth(new Date())} 
-                    className="h-8 text-xs"
+                    className="h-6 md:h-8 text-[10px] md:text-xs px-2"
                   >
                     Today
                   </Button>
@@ -546,65 +652,79 @@ export const LifePlannerDashboard = ({
                     variant="ghost" 
                     size="icon" 
                     onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} 
-                    className="h-8 w-8"
+                    className="h-6 w-6 md:h-8 md:w-8"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
                   </Button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground mb-2">
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                  <div key={day} className="py-2 font-medium">{day}</div>
+              <div className="grid grid-cols-7 gap-0.5 md:gap-1 text-center text-[10px] md:text-xs text-muted-foreground mb-1 md:mb-2">
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, idx) => (
+                  <div key={idx} className="py-1 md:py-2 font-medium">{day}</div>
                 ))}
               </div>
 
-              <div className="grid grid-cols-7 gap-1">
+              <div className="grid grid-cols-7 gap-0.5 md:gap-1">
                 {Array.from({ length: paddingDays }).map((_, index) => (
-                  <div key={`padding-${index}`} className="aspect-square p-1" />
+                  <div key={`padding-${index}`} className={cn("p-0.5 md:p-1", isCompactCalendar ? "h-8" : "aspect-square md:min-h-[80px]")} />
                 ))}
                 
                 {days.map((date) => {
                   const dayQuests = getQuestsForDate(date);
                   const isTodayDate = isToday(date);
+                  const hasQuests = dayQuests.length > 0;
                   
                   return (
                     <div
                       key={date.toISOString()}
                       className={cn(
-                        "min-h-[80px] p-1 rounded-lg text-sm relative border border-transparent transition-colors",
-                        isTodayDate && "bg-primary/10 ring-2 ring-primary",
+                        "rounded-md md:rounded-lg text-xs md:text-sm relative border border-transparent transition-colors flex flex-col items-center",
+                        isCompactCalendar ? "h-8 justify-center" : "aspect-square md:min-h-[80px] p-0.5 md:p-1",
+                        isTodayDate && "bg-primary/10 ring-1 md:ring-2 ring-primary",
                         !isTodayDate && "hover:bg-muted/30"
                       )}
                     >
                       <span className={cn(
-                        "block text-center mb-1",
+                        "text-center text-[10px] md:text-sm",
                         isTodayDate ? "text-primary font-bold" : "text-muted-foreground"
                       )}>
                         {format(date, 'd')}
                       </span>
                       
-                      <div className="space-y-0.5">
-                        {dayQuests.slice(0, 3).map((quest) => {
-                          const style = getCategoryStyle(quest.category);
-                          return (
-                            <div 
-                              key={quest.id}
-                              className={cn(
-                                "text-[10px] truncate rounded px-1 py-0.5",
-                                style.bg, style.text
-                              )}
-                            >
-                              {quest.title.substring(0, 10)}
+                      {/* Compact: Show dots only */}
+                      {isCompactCalendar && hasQuests && (
+                        <div className="flex gap-0.5 mt-0.5">
+                          {dayQuests.slice(0, 3).map((q, idx) => (
+                            <div key={idx} className="w-1 h-1 rounded-full bg-primary" />
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Full: Show quest items */}
+                      {!isCompactCalendar && (
+                        <div className="space-y-0.5 w-full hidden md:block">
+                          {dayQuests.slice(0, 2).map((quest) => {
+                            const style = getCategoryStyle(quest.category);
+                            return (
+                              <div 
+                                key={quest.id}
+                                className={cn(
+                                  "text-[8px] md:text-[10px] truncate rounded px-1 py-0.5",
+                                  style.bg, style.text
+                                )}
+                              >
+                                {quest.title.substring(0, 8)}
+                              </div>
+                            );
+                          })}
+                          {dayQuests.length > 2 && (
+                            <div className="text-[8px] text-muted-foreground text-center">
+                              +{dayQuests.length - 2}
                             </div>
-                          );
-                        })}
-                        {dayQuests.length > 3 && (
-                          <div className="text-[10px] text-muted-foreground text-center">
-                            +{dayQuests.length - 3}
-                          </div>
-                        )}
-                      </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}

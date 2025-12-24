@@ -115,11 +115,11 @@ export const InventoryPage = () => {
   })).filter(c => c.count > 0);
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-display text-foreground flex items-center gap-3">
-          <Package className="w-8 h-8 text-primary" />
-          Inventory Tracker
+    <div className="space-y-4 md:space-y-6 animate-slide-up">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <h1 className="text-xl md:text-3xl font-display text-foreground flex items-center gap-2 md:gap-3">
+          <Package className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+          Inventory
         </h1>
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
@@ -129,49 +129,54 @@ export const InventoryPage = () => {
           }
         }}>
           <DialogTrigger asChild>
-            <Button variant="gaming" className="gap-2">
+            <Button variant="gaming" size="sm" className="gap-2 w-full sm:w-auto">
               <Plus className="w-4 h-4" /> Add Item
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>{editingItem ? 'Edit Item' : 'Add New Item'}</DialogTitle>
+              <DialogTitle className="text-base md:text-lg">{editingItem ? 'Edit Item' : 'Add New Item'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="space-y-3 md:space-y-4 pt-3 md:pt-4">
               <Input
                 placeholder="Item name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="text-sm"
               />
               <Textarea
                 placeholder="Description"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
+                className="text-sm"
+                rows={2}
               />
               <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {categories.map(c => (
                     <SelectItem key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <Input
                   type="number"
                   placeholder="Quantity"
                   value={form.quantity}
                   onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+                  className="text-sm"
                 />
                 <Input
                   placeholder="Location"
                   value={form.location}
                   onChange={(e) => setForm({ ...form, location: e.target.value })}
+                  className="text-sm"
                 />
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button variant="gaming" onClick={handleSubmit}>
+                <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(false)} className="flex-1">Cancel</Button>
+                <Button variant="gaming" size="sm" onClick={handleSubmit} className="flex-1">
                   {editingItem ? 'Update' : 'Add'}
                 </Button>
               </div>
@@ -182,54 +187,54 @@ export const InventoryPage = () => {
 
       {/* Stats */}
       <div className="flex gap-2 flex-wrap">
-        <div className="card-gaming rounded-lg px-4 py-2">
-          <span className="text-sm text-muted-foreground font-body">Total Items: </span>
-          <span className="font-display text-primary">{items.length}</span>
+        <div className="card-gaming rounded-lg px-3 py-1.5 md:px-4 md:py-2">
+          <span className="text-xs md:text-sm text-muted-foreground font-body">Total: </span>
+          <span className="font-display text-sm md:text-base text-primary">{items.length}</span>
         </div>
-        {categoryStats.map(c => (
-          <div key={c.name} className="card-gaming rounded-lg px-4 py-2">
-            <span className="text-sm text-muted-foreground font-body capitalize">{c.name}: </span>
-            <span className="font-display text-foreground">{c.count}</span>
+        {categoryStats.slice(0, 3).map(c => (
+          <div key={c.name} className="card-gaming rounded-lg px-3 py-1.5 md:px-4 md:py-2">
+            <span className="text-xs md:text-sm text-muted-foreground font-body capitalize">{c.name}: </span>
+            <span className="font-display text-sm md:text-base text-foreground">{c.count}</span>
           </div>
         ))}
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
+      <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder="Search items..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          className="pl-10 text-sm"
         />
       </div>
 
       {/* Items Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {filteredItems.map((item) => (
-          <div key={item.id} className="card-gaming rounded-xl p-4 space-y-3 group">
+          <div key={item.id} className="card-gaming rounded-lg md:rounded-xl p-3 md:p-4 space-y-2 md:space-y-3 group">
             <div className="flex items-start justify-between">
-              <div>
-                <h3 className="font-display text-foreground">{item.name}</h3>
-                <p className="text-xs text-primary capitalize">{item.category}</p>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-display text-sm md:text-base text-foreground truncate">{item.name}</h3>
+                <p className="text-[10px] md:text-xs text-primary capitalize">{item.category}</p>
               </div>
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => openEdit(item)} className="p-1 hover:text-primary">
-                  <Edit2 className="w-4 h-4" />
+              <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                <button onClick={() => openEdit(item)} className="p-1.5 hover:text-primary">
+                  <Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </button>
-                <button onClick={() => deleteItem(item.id)} className="p-1 hover:text-destructive">
-                  <Trash2 className="w-4 h-4" />
+                <button onClick={() => deleteItem(item.id)} className="p-1.5 hover:text-destructive">
+                  <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </button>
               </div>
             </div>
             {item.description && (
-              <p className="text-sm text-muted-foreground font-body line-clamp-2">{item.description}</p>
+              <p className="text-xs md:text-sm text-muted-foreground font-body line-clamp-2">{item.description}</p>
             )}
-            <div className="flex justify-between text-sm font-body">
+            <div className="flex justify-between text-xs md:text-sm font-body">
               <span className="text-muted-foreground">Qty: <span className="text-foreground">{item.quantity}</span></span>
               {item.location && (
-                <span className="text-muted-foreground">📍 {item.location}</span>
+                <span className="text-muted-foreground truncate ml-2">📍 {item.location}</span>
               )}
             </div>
           </div>
@@ -237,7 +242,7 @@ export const InventoryPage = () => {
       </div>
 
       {filteredItems.length === 0 && !loading && (
-        <div className="text-center py-12 text-muted-foreground font-body">
+        <div className="text-center py-8 md:py-12 text-muted-foreground font-body text-sm">
           No items yet. Add your first inventory item!
         </div>
       )}
