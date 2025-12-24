@@ -153,7 +153,7 @@ export const MusicPlayer = ({ className, compact = false }: MusicPlayerProps) =>
 
   if (compact) {
     return (
-      <div className={cn("card-gaming rounded-xl p-5 space-y-5 border border-border/50", className)}>
+      <div className={cn("card-gaming rounded-lg md:rounded-xl p-3 md:p-5 space-y-3 md:space-y-5 border border-border/50", className)}>
         <audio
           ref={audioRef}
           onTimeUpdate={handleTimeUpdate}
@@ -161,33 +161,33 @@ export const MusicPlayer = ({ className, compact = false }: MusicPlayerProps) =>
           onLoadedMetadata={handleTimeUpdate}
         />
         
-        <div className="flex gap-4">
-          <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-secondary via-primary/80 to-primary flex items-center justify-center shadow-[0_0_25px_hsl(var(--secondary)/0.4)]">
+        <div className="flex gap-3 md:gap-4">
+          <div className="w-14 h-14 md:w-20 md:h-20 rounded-lg md:rounded-xl bg-gradient-to-br from-secondary via-primary/80 to-primary flex items-center justify-center shadow-[0_0_25px_hsl(var(--secondary)/0.4)] shrink-0">
             {isLoading ? (
-              <Loader2 className="w-9 h-9 text-foreground animate-spin" />
+              <Loader2 className="w-6 h-6 md:w-9 md:h-9 text-foreground animate-spin" />
             ) : (
-              <Music className="w-9 h-9 text-foreground drop-shadow-md" />
+              <Music className="w-6 h-6 md:w-9 md:h-9 text-foreground drop-shadow-md" />
             )}
           </div>
-          <div className="flex-1 pt-1">
-            <p className="font-display text-base text-foreground">
+          <div className="flex-1 min-w-0 pt-0.5 md:pt-1">
+            <p className="font-display text-sm md:text-base text-foreground truncate">
               {currentTrack?.title || 'Lofi Focus Mix'}
             </p>
-            <p className="text-sm text-muted-foreground font-body">
+            <p className="text-xs md:text-sm text-muted-foreground font-body truncate">
               {currentTrack?.artist || 'Select a track'}
             </p>
             <button 
               onClick={togglePlay}
               disabled={isLoading}
-              className="mt-2.5 flex items-center gap-1.5 text-sm text-primary font-body hover:underline transition-all disabled:opacity-50"
+              className="mt-1.5 md:mt-2.5 flex items-center gap-1 md:gap-1.5 text-xs md:text-sm text-primary font-body hover:underline transition-all disabled:opacity-50"
             >
               {isPlaying ? (
                 <>
-                  <Pause className="w-3.5 h-3.5" /> Pause
+                  <Pause className="w-3 h-3 md:w-3.5 md:h-3.5" /> Pause
                 </>
               ) : (
                 <>
-                  <Play className="w-3.5 h-3.5" /> Play Now
+                  <Play className="w-3 h-3 md:w-3.5 md:h-3.5" /> Play Now
                 </>
               )}
             </button>
@@ -212,32 +212,32 @@ export const MusicPlayer = ({ className, compact = false }: MusicPlayerProps) =>
         )}
         
         {/* Mini Playlist */}
-        <div className="space-y-1">
-          {tracks.slice(0, 4).map((track) => (
+        <div className="space-y-0.5 md:space-y-1">
+          {tracks.slice(0, 3).map((track) => (
             <button
               key={track.id}
               onClick={() => loadTrack(track.id)}
               disabled={isLoading}
               className={cn(
-                "w-full flex items-center justify-between py-2.5 border-b border-border/20 last:border-0 group hover:bg-muted/20 -mx-2 px-2 rounded transition-colors text-left",
+                "w-full flex items-center justify-between py-2 md:py-2.5 border-b border-border/20 last:border-0 group hover:bg-muted/20 -mx-2 px-2 rounded transition-colors text-left",
                 currentTrack?.id === track.id && "bg-primary/10"
               )}
             >
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2 md:gap-2.5 min-w-0 flex-1">
                 <span className={cn(
-                  "text-sm",
+                  "text-xs md:text-sm shrink-0",
                   currentTrack?.id === track.id && isPlaying ? "text-primary animate-pulse" : "text-primary"
                 )}>
                   {currentTrack?.id === track.id && isPlaying ? '▶' : '♫'}
                 </span>
                 <span className={cn(
-                  "text-sm font-body transition-colors",
+                  "text-xs md:text-sm font-body transition-colors truncate",
                   currentTrack?.id === track.id ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                 )}>
                   {track.title}
                 </span>
               </div>
-              <span className="text-xs text-muted-foreground/70 font-body">
+              <span className="text-[10px] md:text-xs text-muted-foreground/70 font-body shrink-0 ml-2">
                 {track.duration}
               </span>
             </button>

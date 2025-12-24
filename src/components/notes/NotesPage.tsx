@@ -163,15 +163,15 @@ export const NotesPage = () => {
   };
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 className="text-3xl font-display text-foreground flex items-center gap-3">
-          <FileText className="w-8 h-8 text-primary" />
+    <div className="space-y-4 md:space-y-6 animate-slide-up">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center justify-between md:gap-4">
+        <h1 className="text-xl md:text-3xl font-display text-foreground flex items-center gap-2 md:gap-3">
+          <FileText className="w-6 h-6 md:w-8 md:h-8 text-primary" />
           Knowledge Vault
         </h1>
         <div className="flex gap-2">
           {notes.length === 0 && !loading && (
-            <Button variant="outline" onClick={addExampleNotes}>
+            <Button variant="outline" onClick={addExampleNotes} size="sm" className="text-xs md:text-sm">
               Add Examples
             </Button>
           )}
@@ -183,11 +183,11 @@ export const NotesPage = () => {
             }
           }}>
             <DialogTrigger asChild>
-              <Button variant="gaming" className="gap-2">
+              <Button variant="gaming" className="gap-2 flex-1 md:flex-none">
                 <Plus className="w-4 h-4" /> New Note
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg mx-4 md:mx-auto">
               <DialogHeader>
                 <DialogTitle>{editingNote ? 'Edit Note' : 'New Note'}</DialogTitle>
               </DialogHeader>
@@ -201,12 +201,12 @@ export const NotesPage = () => {
                   placeholder="Write your note... (Markdown supported)"
                   value={form.content}
                   onChange={(e) => setForm({ ...form, content: e.target.value })}
-                  rows={10}
+                  rows={8}
                   className="font-mono text-sm"
                 />
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                  <Button variant="gaming" onClick={handleSubmit}>
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1 md:flex-none">Cancel</Button>
+                  <Button variant="gaming" onClick={handleSubmit} className="flex-1 md:flex-none">
                     {editingNote ? 'Update' : 'Create'}
                   </Button>
                 </div>
@@ -217,7 +217,7 @@ export const NotesPage = () => {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
+      <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder="Search notes..."
@@ -228,39 +228,39 @@ export const NotesPage = () => {
       </div>
 
       {/* Notes Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {filteredNotes.map((note) => (
           <div
             key={note.id}
             onClick={() => openNoteDetail(note)}
             className={cn(
-              "card-gaming rounded-xl p-4 space-y-3 group hover:ring-1 hover:ring-primary/50 transition-all cursor-pointer",
+              "card-gaming rounded-lg md:rounded-xl p-3 md:p-4 space-y-2 md:space-y-3 group hover:ring-1 hover:ring-primary/50 transition-all cursor-pointer",
               note.is_pinned && "ring-1 ring-accent/50"
             )}
           >
-            <div className="flex items-start justify-between">
-              <h3 className="font-display text-foreground line-clamp-1">{note.title}</h3>
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-display text-foreground line-clamp-1 text-sm md:text-base">{note.title}</h3>
+              <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0" onClick={(e) => e.stopPropagation()}>
                 <button onClick={() => togglePin(note)} className="p-1 hover:text-accent">
-                  <Pin className={cn("w-4 h-4", note.is_pinned && "fill-accent text-accent")} />
+                  <Pin className={cn("w-3.5 h-3.5 md:w-4 md:h-4", note.is_pinned && "fill-accent text-accent")} />
                 </button>
                 <button onClick={() => openEdit(note)} className="p-1 hover:text-primary">
-                  <Edit2 className="w-4 h-4" />
+                  <Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </button>
                 <button onClick={() => deleteNote(note.id)} className="p-1 hover:text-destructive">
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </button>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground font-body line-clamp-3">
+            <p className="text-xs md:text-sm text-muted-foreground font-body line-clamp-2 md:line-clamp-3">
               {note.content?.replace(/^##?\s+/gm, '').replace(/- \[[ x]\] /g, '• ') || 'No content'}
             </p>
             <div className="flex items-center justify-between">
-              <Badge variant="outline" className={cn("text-xs", getCategoryColor(note.category))}>
+              <Badge variant="outline" className={cn("text-[10px] md:text-xs", getCategoryColor(note.category))}>
                 {note.category}
               </Badge>
-              <p className="text-xs text-muted-foreground/70 font-body flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
+              <p className="text-[10px] md:text-xs text-muted-foreground/70 font-body flex items-center gap-1">
+                <Calendar className="w-2.5 h-2.5 md:w-3 md:h-3" />
                 {format(new Date(note.created_at), 'MMM d')}
               </p>
             </div>

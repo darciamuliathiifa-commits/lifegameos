@@ -89,7 +89,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       {/* Sidebar */}
       <aside className={cn(
         "fixed left-0 top-0 z-40 h-screen bg-sidebar flex flex-col transition-transform duration-300 border-r border-sidebar-border",
-        "w-72 lg:w-64",
+        "w-64 lg:w-64",
         mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         {/* Logo */}

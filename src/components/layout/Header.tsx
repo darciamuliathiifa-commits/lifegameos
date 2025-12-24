@@ -25,9 +25,9 @@ export const Header = ({ profile }: HeaderProps) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 lg:left-64 right-0 z-30 h-16 bg-card/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 flex items-center justify-between">
+    <header className="fixed top-0 left-0 lg:left-64 right-0 z-30 h-14 md:h-16 bg-card/80 backdrop-blur-xl border-b border-border px-3 md:px-4 lg:px-6 flex items-center justify-between">
       {/* Spacer for mobile menu button */}
-      <div className="w-12 lg:hidden" />
+      <div className="w-10 lg:hidden" />
 
       {/* Breadcrumb */}
       <div className="hidden md:flex items-center gap-2 text-sm">
@@ -38,9 +38,9 @@ export const Header = ({ profile }: HeaderProps) => {
       </div>
 
       {/* Right Side */}
-      <div className="flex items-center gap-3 lg:gap-4 ml-auto">
+      <div className="flex items-center gap-2 md:gap-3 lg:gap-4 ml-auto">
         {/* Search */}
-        <div className="hidden md:flex items-center gap-2 bg-muted/50 border border-border rounded-lg px-3 py-2 w-52 transition-all focus-within:border-primary/50 focus-within:bg-card">
+        <div className="hidden lg:flex items-center gap-2 bg-muted/50 border border-border rounded-lg px-3 py-2 w-52 transition-all focus-within:border-primary/50 focus-within:bg-card">
           <Search className="w-4 h-4 text-muted-foreground" />
           <input
             type="text"
