@@ -1,15 +1,10 @@
 import { useState } from 'react';
-import { Calendar, CheckSquare, Book, Dumbbell, Utensils, ChevronLeft, ChevronRight, Plus, Play, Music, MoreHorizontal } from 'lucide-react';
+import { Calendar, CheckSquare, Book, Dumbbell, Utensils, ChevronLeft, ChevronRight, Plus, Play, Music, MoreHorizontal, CalendarDays, RotateCcw, PenLine, UtensilsCrossed, Plane, Target, Eye, Heart, BookOpen, Clapperboard, Wallet } from 'lucide-react';
 import { Quest, Habit, Goal, Stats, UserProfile } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
-import heroBanner from '@/assets/hero-banner.jpg';
-import cardDaily from '@/assets/card-daily.jpg';
-import cardPlanners from '@/assets/card-planners.jpg';
-import cardPersonal from '@/assets/card-personal.jpg';
-import cardGoals from '@/assets/card-goals.jpg';
 
 interface LifePlannerDashboardProps {
   stats: Stats;
@@ -26,50 +21,50 @@ const categoryCards = [
   { 
     id: 'daily', 
     title: 'Daily', 
-    image: cardDaily,
+    icon: CalendarDays,
     items: [
-      { name: 'Planner', icon: '📅' },
-      { name: 'Habits', icon: '🔄' },
-      { name: 'Journal', icon: '✍️' }
+      { name: 'Planner', icon: CalendarDays },
+      { name: 'Habits', icon: RotateCcw },
+      { name: 'Journal', icon: PenLine }
     ],
     tab: 'quests',
-    color: 'neon-cyan'
+    color: 'primary'
   },
   { 
     id: 'planners', 
     title: 'Planners', 
-    image: cardPlanners,
+    icon: UtensilsCrossed,
     items: [
-      { name: 'Meal Planner', icon: '🍽️' },
-      { name: 'Travel Planner', icon: '✈️' },
-      { name: 'Workout Planner', icon: '💪' }
+      { name: 'Meal Planner', icon: UtensilsCrossed },
+      { name: 'Travel Planner', icon: Plane },
+      { name: 'Workout Planner', icon: Dumbbell }
     ],
     tab: 'habits',
-    color: 'neon-magenta'
+    color: 'secondary'
   },
   { 
     id: 'personal', 
     title: 'Personal', 
-    image: cardPersonal,
+    icon: BookOpen,
     items: [
-      { name: 'Bookshelf', icon: '📚' },
-      { name: 'Movies & Series', icon: '🎬' },
-      { name: 'Finance', icon: '💰' }
+      { name: 'Bookshelf', icon: BookOpen },
+      { name: 'Movies & Series', icon: Clapperboard },
+      { name: 'Finance', icon: Wallet }
     ],
     tab: 'goals',
-    color: 'neon-purple'
+    color: 'accent'
   },
   { 
     id: 'goals', 
     title: 'Goals', 
-    image: cardGoals,
+    icon: Target,
     items: [
-      { name: 'Goals', icon: '🎯' },
-      { name: 'Vision', icon: '👁️' },
-      { name: 'Health', icon: '❤️' }
+      { name: 'Goals', icon: Target },
+      { name: 'Vision', icon: Eye },
+      { name: 'Health', icon: Heart }
     ],
     tab: 'goals',
-    color: 'neon-yellow'
+    color: 'destructive'
   },
 ];
 
@@ -138,68 +133,54 @@ export const LifePlannerDashboard = ({
   };
 
   return (
-    <div className="space-y-8 animate-slide-up">
-      {/* Hero Banner */}
-      <div className="relative h-48 md:h-56 rounded-2xl overflow-hidden shadow-lg">
-        <img 
-          src={heroBanner} 
-          alt="Life Planner" 
-          className="w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-        
-        {/* Glowing Orb */}
-        <div className="absolute bottom-6 left-6 w-3 h-3 rounded-full bg-primary animate-pulse-glow shadow-[0_0_20px_hsl(var(--primary))]" />
-      </div>
-
+    <div className="space-y-6 animate-slide-up">
       {/* Title Section */}
-      <div>
-        <h1 className="text-3xl md:text-4xl font-display text-foreground tracking-wide">Life Planner</h1>
-        <p className="text-muted-foreground font-body flex items-center gap-2 mt-2 text-base">
-          <span className="w-1 h-5 bg-primary rounded-full" />
+      <div className="mb-2">
+        <h1 className="text-2xl md:text-3xl font-display text-foreground tracking-wide">Life Planner</h1>
+        <p className="text-muted-foreground font-body text-sm mt-1">
           All your thoughts in one private place.
         </p>
       </div>
 
-      {/* Category Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      {/* Category Cards - Icon Based Clean Layout */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {categoryCards.map((card, index) => (
           <button
             key={card.id}
             onClick={() => onNavigate(card.tab)}
             className={cn(
-              "group relative rounded-2xl overflow-hidden aspect-square transition-all duration-500 animate-slide-up",
-              "hover:scale-[1.03] hover:shadow-[0_0_40px_hsl(var(--primary)/0.4)]",
-              "ring-2 ring-transparent hover:ring-primary/50"
+              "group p-5 rounded-xl transition-all duration-300 animate-slide-up",
+              "bg-card/60 backdrop-blur-sm border border-border/50",
+              "hover:bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5",
+              "flex flex-col items-center gap-3"
             )}
-            style={{ animationDelay: `${index * 75}ms` }}
+            style={{ animationDelay: `${index * 50}ms` }}
           >
-            <img 
-              src={card.image} 
-              alt={card.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-115"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <h3 className="font-display text-xl md:text-2xl text-foreground drop-shadow-lg tracking-wider">
-                {card.title}
-              </h3>
+            <div className={cn(
+              "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300",
+              "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground",
+              "group-hover:scale-110"
+            )}>
+              <card.icon className="w-6 h-6" />
             </div>
+            <h3 className="font-display text-base text-foreground">
+              {card.title}
+            </h3>
           </button>
         ))}
       </div>
 
-      {/* Category Items */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-2">
+      {/* Category Items - Compact List */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {categoryCards.map((card) => (
-          <div key={`items-${card.id}`} className="space-y-1.5">
+          <div key={`items-${card.id}`} className="space-y-1">
             {card.items.map((item) => (
               <button 
                 key={item.name}
                 onClick={() => onNavigate(card.tab)}
-                className="flex items-center gap-2.5 text-muted-foreground hover:text-foreground transition-colors font-body text-sm group"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-body text-sm group w-full py-1"
               >
-                <span className="text-sm group-hover:scale-110 transition-transform">{item.icon}</span>
+                <item.icon className="w-3.5 h-3.5 text-primary/60 group-hover:text-primary transition-colors" />
                 <span className="group-hover:translate-x-0.5 transition-transform">{item.name}</span>
               </button>
             ))}
