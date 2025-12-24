@@ -1,6 +1,14 @@
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, LogOut } from 'lucide-react';
 import { UserProfile, XP_PER_LEVEL } from '@/types/game';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface HeaderProps {
   profile: UserProfile;
@@ -8,6 +16,13 @@ interface HeaderProps {
 
 export const Header = ({ profile }: HeaderProps) => {
   const xpProgress = (profile.currentXP / XP_PER_LEVEL) * 100;
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <header className="fixed top-0 left-20 lg:left-64 right-0 z-30 h-16 bg-background/90 backdrop-blur-xl border-b border-border px-4 lg:px-6 flex items-center justify-between">
@@ -47,19 +62,29 @@ export const Header = ({ profile }: HeaderProps) => {
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full shadow-[0_0_6px_hsl(var(--destructive))]" />
         </button>
 
-        {/* Profile */}
-        <div className="flex items-center gap-3">
-          <Avatar className="w-9 h-9 border-2 border-primary/50 shadow-[0_0_12px_hsl(var(--primary)/0.3)]">
-            <AvatarImage src={profile.avatar} alt={profile.name} />
-            <AvatarFallback className="bg-primary text-primary-foreground font-display text-xs">
-              {profile.name.split(' ').map(n => n[0]).join('')}
-            </AvatarFallback>
-          </Avatar>
-          <div className="hidden md:block">
-            <p className="text-sm font-display text-foreground leading-tight">{profile.name}</p>
-            <p className="text-xs font-body text-primary leading-tight">{profile.title}</p>
-          </div>
-        </div>
+        {/* Profile Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-3 outline-none">
+              <Avatar className="w-9 h-9 border-2 border-primary/50 shadow-[0_0_12px_hsl(var(--primary)/0.3)]">
+                <AvatarImage src={profile.avatar} alt={profile.name} />
+                <AvatarFallback className="bg-primary text-primary-foreground font-display text-xs">
+                  {profile.name.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
+              <div className="hidden md:block text-left">
+                <p className="text-sm font-display text-foreground leading-tight">{profile.name}</p>
+                <p className="text-xs font-body text-primary leading-tight">{profile.title}</p>
+              </div>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
