@@ -1,4 +1,3 @@
-import ReactMarkdown from 'react-markdown';
 import { cn } from '@/lib/utils';
 
 interface MarkdownRendererProps {
@@ -7,141 +6,54 @@ interface MarkdownRendererProps {
 }
 
 export const MarkdownRenderer = ({ content, className }: MarkdownRendererProps) => {
+  // Simple markdown parser without external dependencies
+  const parseMarkdown = (text: string): string => {
+    let html = text
+      // Escape HTML
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      // Headers
+      .replace(/^###### (.+)$/gm, '<h6 class="text-sm font-display text-muted-foreground mb-1 mt-2">$1</h6>')
+      .replace(/^##### (.+)$/gm, '<h5 class="text-base font-display text-foreground mb-1 mt-2">$1</h5>')
+      .replace(/^#### (.+)$/gm, '<h4 class="text-lg font-display text-foreground mb-2 mt-3">$1</h4>')
+      .replace(/^### (.+)$/gm, '<h3 class="text-xl font-display text-foreground mb-2 mt-4">$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-display text-foreground border-b border-border/50 pb-2 mb-3 mt-5">$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1 class="text-3xl font-display text-foreground border-b border-border pb-2 mb-4 mt-6">$1</h1>')
+      // Bold and Italic
+      .replace(/\*\*\*(.+?)\*\*\*/g, '<strong class="font-semibold"><em>$1</em></strong>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em class="italic text-foreground">$1</em>')
+      .replace(/___(.+?)___/g, '<strong class="font-semibold"><em>$1</em></strong>')
+      .replace(/__(.+?)__/g, '<strong class="font-semibold text-foreground">$1</strong>')
+      .replace(/_(.+?)_/g, '<em class="italic text-foreground">$1</em>')
+      // Inline code
+      .replace(/`([^`]+)`/g, '<code class="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary">$1</code>')
+      // Blockquotes
+      .replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-primary/50 pl-4 italic text-muted-foreground my-2 bg-muted/30 py-2 rounded-r">$1</blockquote>')
+      // Horizontal rules
+      .replace(/^---$/gm, '<hr class="border-border my-6" />')
+      .replace(/^\*\*\*$/gm, '<hr class="border-border my-6" />')
+      // Unordered lists
+      .replace(/^[\-\*] (.+)$/gm, '<li class="text-foreground font-body ml-4 list-disc">$1</li>')
+      // Ordered lists
+      .replace(/^\d+\. (.+)$/gm, '<li class="text-foreground font-body ml-4 list-decimal">$1</li>')
+      // Links
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary/80 underline underline-offset-2">$1</a>')
+      // Paragraphs (wrap remaining text)
+      .replace(/^(?!<[hblaopu]|<hr|<code|<strong|<em)(.+)$/gm, '<p class="text-foreground font-body leading-relaxed mb-3">$1</p>')
+      // Clean up empty paragraphs
+      .replace(/<p class="[^"]*"><\/p>/g, '')
+      // Wrap consecutive list items
+      .replace(/(<li[^>]*>.*?<\/li>\n?)+/g, '<ul class="list-disc list-inside space-y-1 mb-3 text-foreground font-body ml-2">$&</ul>');
+
+    return html;
+  };
+
   return (
-    <div className={cn("prose prose-invert max-w-none", className)}>
-      <ReactMarkdown
-        components={{
-        h1: ({ children }) => (
-          <h1 className="text-3xl font-display text-foreground border-b border-border pb-2 mb-4 mt-6 first:mt-0">
-            {children}
-          </h1>
-        ),
-        h2: ({ children }) => (
-          <h2 className="text-2xl font-display text-foreground border-b border-border/50 pb-2 mb-3 mt-5">
-            {children}
-          </h2>
-        ),
-        h3: ({ children }) => (
-          <h3 className="text-xl font-display text-foreground mb-2 mt-4">
-            {children}
-          </h3>
-        ),
-        h4: ({ children }) => (
-          <h4 className="text-lg font-display text-foreground mb-2 mt-3">
-            {children}
-          </h4>
-        ),
-        h5: ({ children }) => (
-          <h5 className="text-base font-display text-foreground mb-1 mt-2">
-            {children}
-          </h5>
-        ),
-        h6: ({ children }) => (
-          <h6 className="text-sm font-display text-muted-foreground mb-1 mt-2">
-            {children}
-          </h6>
-        ),
-        p: ({ children }) => (
-          <p className="text-foreground font-body leading-relaxed mb-3">
-            {children}
-          </p>
-        ),
-        ul: ({ children }) => (
-          <ul className="list-disc list-inside space-y-1 mb-3 text-foreground font-body ml-2">
-            {children}
-          </ul>
-        ),
-        ol: ({ children }) => (
-          <ol className="list-decimal list-inside space-y-1 mb-3 text-foreground font-body ml-2">
-            {children}
-          </ol>
-        ),
-        li: ({ children }) => (
-          <li className="text-foreground font-body">
-            {children}
-          </li>
-        ),
-        blockquote: ({ children }) => (
-          <blockquote className="border-l-4 border-primary/50 pl-4 italic text-muted-foreground my-4 bg-muted/30 py-2 rounded-r">
-            {children}
-          </blockquote>
-        ),
-        code: ({ children, className }) => {
-          const isInline = !className;
-          if (isInline) {
-            return (
-              <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary">
-                {children}
-              </code>
-            );
-          }
-          return (
-            <code className="block bg-muted p-4 rounded-lg text-sm font-mono text-foreground overflow-x-auto my-3">
-              {children}
-            </code>
-          );
-        },
-        pre: ({ children }) => (
-          <pre className="bg-muted rounded-lg overflow-x-auto my-3">
-            {children}
-          </pre>
-        ),
-        a: ({ children, href }) => (
-          <a 
-            href={href} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-primary hover:text-primary/80 underline underline-offset-2"
-          >
-            {children}
-          </a>
-        ),
-        strong: ({ children }) => (
-          <strong className="font-semibold text-foreground">
-            {children}
-          </strong>
-        ),
-        em: ({ children }) => (
-          <em className="italic text-foreground">
-            {children}
-          </em>
-        ),
-        hr: () => (
-          <hr className="border-border my-6" />
-        ),
-        table: ({ children }) => (
-          <div className="overflow-x-auto my-4">
-            <table className="w-full border-collapse border border-border rounded-lg">
-              {children}
-            </table>
-          </div>
-        ),
-        thead: ({ children }) => (
-          <thead className="bg-muted">
-            {children}
-          </thead>
-        ),
-        th: ({ children }) => (
-          <th className="border border-border px-4 py-2 text-left font-display text-foreground">
-            {children}
-          </th>
-        ),
-        td: ({ children }) => (
-          <td className="border border-border px-4 py-2 font-body text-foreground">
-            {children}
-          </td>
-        ),
-        img: ({ src, alt }) => (
-          <img 
-            src={src} 
-            alt={alt || ''} 
-            className="max-w-full h-auto rounded-lg my-4"
-          />
-        ),
-        }}
-      >
-        {content}
-      </ReactMarkdown>
-    </div>
+    <div 
+      className={cn("prose prose-invert max-w-none", className)}
+      dangerouslySetInnerHTML={{ __html: parseMarkdown(content) }}
+    />
   );
 };
