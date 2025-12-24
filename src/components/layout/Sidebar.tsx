@@ -1,6 +1,11 @@
-import { Home, Target, Zap, Trophy, User, Settings, Flame, FileText, Wallet, Package, Moon, Brain, Music, Menu, X, Timer, Ticket, Pyramid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
+import {
+  IconDashboard, IconTarget, IconFlame, IconBolt, IconTrophy,
+  IconNote, IconBrain, IconWallet, IconInventory, IconMoon,
+  IconMusic, IconTimer, IconTicket, IconPyramid, IconProfile
+} from '@/components/icons/CleanIcons';
 
 interface SidebarProps {
   activeTab: string;
@@ -8,21 +13,21 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: Home, emoji: '🏠' },
-  { id: 'quests', label: 'Quests', icon: Target, emoji: '🎯' },
-  { id: 'habits', label: 'Habits', icon: Flame, emoji: '🔥' },
-  { id: 'goals', label: 'Goals', icon: Zap, emoji: '⚡' },
-  { id: 'achievements', label: 'Achievements', icon: Trophy, emoji: '🏆' },
-  { id: 'notes', label: 'Notes', icon: FileText, emoji: '📝' },
-  { id: 'secondbrain', label: 'Second Brain', icon: Brain, emoji: '🧠' },
-  { id: 'finance', label: 'Finance', icon: Wallet, emoji: '💰' },
-  { id: 'inventory', label: 'Inventory', icon: Package, emoji: '📦' },
-  { id: 'prayers', label: 'Doa Harian', icon: Moon, emoji: '🌙' },
-  { id: 'music', label: 'Music', icon: Music, emoji: '🎵' },
-  { id: 'pomodoro', label: 'Pomodoro', icon: Timer, emoji: '🍅' },
-  { id: 'temantiket', label: 'Temantiket Space', icon: Ticket, emoji: '🎫' },
-  { id: 'aigypt', label: 'AIGYPT Space', icon: Pyramid, emoji: '🔺' },
-  { id: 'profile', label: 'Profile', icon: User, emoji: '👤' },
+  { id: 'dashboard', label: 'Dashboard', Icon: IconDashboard },
+  { id: 'quests', label: 'Quests', Icon: IconTarget },
+  { id: 'habits', label: 'Habits', Icon: IconFlame },
+  { id: 'goals', label: 'Goals', Icon: IconBolt },
+  { id: 'achievements', label: 'Achievements', Icon: IconTrophy },
+  { id: 'notes', label: 'Notes', Icon: IconNote },
+  { id: 'secondbrain', label: 'Second Brain', Icon: IconBrain },
+  { id: 'finance', label: 'Finance', Icon: IconWallet },
+  { id: 'inventory', label: 'Inventory', Icon: IconInventory },
+  { id: 'prayers', label: 'Doa Harian', Icon: IconMoon },
+  { id: 'music', label: 'Music', Icon: IconMusic },
+  { id: 'pomodoro', label: 'Pomodoro', Icon: IconTimer },
+  { id: 'temantiket', label: 'Temantiket Space', Icon: IconTicket },
+  { id: 'aigypt', label: 'AIGYPT Space', Icon: IconPyramid },
+  { id: 'profile', label: 'Profile', Icon: IconProfile },
 ];
 
 export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
@@ -60,14 +65,14 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         {/* Logo */}
         <div className="h-16 flex items-center px-5 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-secondary via-amber-400 to-orange-500 flex items-center justify-center shadow-lg animate-bounce-gentle">
-              <span className="text-xl">🌴</span>
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary via-secondary to-accent flex items-center justify-center shadow-lg">
+              <IconDashboard className="w-6 h-6 text-white" size={24} />
             </div>
             <div>
               <span className="font-display text-lg text-sidebar-foreground tracking-wide">
-                Life<span className="text-secondary">Game</span>
+                Life<span className="text-primary">Game</span>
               </span>
-              <p className="text-[11px] text-sidebar-foreground/60 font-body tracking-wide">Adventure OS</p>
+              <p className="text-[11px] text-sidebar-foreground/60 font-body tracking-wide">OS Hub</p>
             </div>
           </div>
         </div>
@@ -75,7 +80,6 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         {/* Navigation */}
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
-            const Icon = item.icon;
             const isActive = activeTab === item.id;
             
             return (
@@ -85,19 +89,25 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                 className={cn(
                   "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
                   isActive
-                    ? "bg-gradient-to-r from-secondary/25 to-secondary/15 text-secondary shadow-md border border-secondary/30"
+                    ? "bg-gradient-to-r from-primary/25 to-primary/15 text-primary shadow-md border border-primary/30"
                     : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
                 )}
               >
-                <span className="text-lg">{item.emoji}</span>
+                <item.Icon 
+                  className={cn(
+                    "transition-all duration-200",
+                    isActive ? "text-primary" : "text-sidebar-foreground/60 group-hover:text-primary"
+                  )} 
+                  size={20} 
+                />
                 <span className={cn(
-                  "font-body text-sm font-semibold tracking-wide flex-1 text-left",
-                  isActive ? "text-secondary" : ""
+                  "font-body text-sm font-medium tracking-wide flex-1 text-left",
+                  isActive ? "text-primary" : ""
                 )}>
                   {item.label}
                 </span>
                 {isActive && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-secondary shadow-[0_0_12px_hsl(var(--secondary))] animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary))] animate-pulse" />
                 )}
               </button>
             );
@@ -107,8 +117,8 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         {/* Settings */}
         <div className="p-3 border-t border-sidebar-border">
           <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200">
-            <span className="text-lg">⚙️</span>
-            <span className="font-body text-sm font-semibold tracking-wide">
+            <IconTarget className="w-5 h-5 text-sidebar-foreground/60" size={20} />
+            <span className="font-body text-sm font-medium tracking-wide">
               Settings
             </span>
           </button>
