@@ -2,7 +2,12 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -55,13 +60,19 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        adventure: {
-          jungle: "hsl(var(--jungle))",
-          treasure: "hsl(var(--treasure))",
-          ocean: "hsl(var(--ocean))",
-          sunset: "hsl(var(--sunset))",
-          earth: "hsl(var(--earth))",
-          sky: "hsl(var(--sky))",
+        navy: {
+          DEFAULT: "hsl(222 40% 6%)",
+          50: "hsl(222 30% 95%)",
+          100: "hsl(222 32% 90%)",
+          200: "hsl(222 34% 80%)",
+          300: "hsl(222 36% 65%)",
+          400: "hsl(222 38% 50%)",
+          500: "hsl(222 40% 35%)",
+          600: "hsl(222 42% 25%)",
+          700: "hsl(222 44% 18%)",
+          800: "hsl(222 40% 12%)",
+          900: "hsl(222 42% 8%)",
+          950: "hsl(222 45% 4%)",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -91,33 +102,33 @@ export default {
           to: { height: "0" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(var(--secondary) / 0.4)" },
-          "50%": { boxShadow: "0 0 40px hsl(var(--secondary) / 0.7)" },
+          "0%, 100%": { boxShadow: "0 0 20px hsl(210 100% 55% / 0.2)" },
+          "50%": { boxShadow: "0 0 40px hsl(210 100% 55% / 0.4)" },
         },
         float: {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-8px)" },
+          "50%": { transform: "translateY(-6px)" },
         },
         "slide-up": {
-          from: { opacity: "0", transform: "translateY(20px)" },
+          from: { opacity: "0", transform: "translateY(15px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
         "scale-in": {
-          from: { opacity: "0", transform: "scale(0.9)" },
+          from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
         "bounce-gentle": {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-4px)" },
+          "50%": { transform: "translateY(-3px)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "pulse-glow": "pulse-glow 2.5s ease-in-out infinite",
-        float: "float 4s ease-in-out infinite",
-        "slide-up": "slide-up 0.5s ease-out",
-        "scale-in": "scale-in 0.3s ease-out",
+        "pulse-glow": "pulse-glow 3s ease-in-out infinite",
+        float: "float 5s ease-in-out infinite",
+        "slide-up": "slide-up 0.4s ease-out",
+        "scale-in": "scale-in 0.25s ease-out",
         "bounce-gentle": "bounce-gentle 2s ease-in-out infinite",
       },
     },
