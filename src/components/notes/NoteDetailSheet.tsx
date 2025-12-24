@@ -1,9 +1,14 @@
-import { X, Pin, Trash2, Edit2, Calendar, Tag } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Pin, Trash2, Calendar, Tag, Save } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface Note {
   id: string;
@@ -18,20 +23,69 @@ interface NoteDetailSheetProps {
   note: Note | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onEdit: (note: Note) => void;
   onDelete: (id: string) => void;
   onTogglePin: (note: Note) => void;
+  onNoteUpdated?: () => void;
 }
 
 export const NoteDetailSheet = ({
   note,
   open,
   onOpenChange,
-  onEdit,
   onDelete,
-  onTogglePin
+  onTogglePin,
+  onNoteUpdated
 }: NoteDetailSheetProps) => {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    if (note) {
+      setTitle(note.title);
+      setContent(note.content || '');
+      setHasChanges(false);
+    }
+  }, [note]);
+
   if (!note) return null;
+
+  const handleTitleChange = (value: string) => {
+    setTitle(value);
+    setHasChanges(true);
+  };
+
+  const handleContentChange = (value: string) => {
+    setContent(value);
+    setHasChanges(true);
+  };
+
+  const saveChanges = async () => {
+    if (!hasChanges) return;
+    
+    setIsSaving(true);
+    const { error } = await supabase
+      .from('notes')
+      .update({ title, content, updated_at: new Date().toISOString() })
+      .eq('id', note.id);
+
+    if (error) {
+      toast.error('Failed to save changes');
+    } else {
+      toast.success('Note saved');
+      setHasChanges(false);
+      onNoteUpdated?.();
+    }
+    setIsSaving(false);
+  };
+
+  const handleClose = async (isOpen: boolean) => {
+    if (!isOpen && hasChanges) {
+      await saveChanges();
+    }
+    onOpenChange(isOpen);
+  };
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -48,79 +102,24 @@ export const NoteDetailSheet = ({
       finance: 'bg-green-500/20 text-green-400 border-green-500/30',
       health: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
       general: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+      aigypt: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+      temantiket: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
     };
     return colors[category] || colors.general;
   };
 
-  // Parse markdown-like content
-  const renderContent = (content: string) => {
-    const lines = content.split('\n');
-    return lines.map((line, index) => {
-      // Headers
-      if (line.startsWith('## ')) {
-        return (
-          <h2 key={index} className="text-xl font-display text-foreground mt-6 mb-3 first:mt-0">
-            {line.replace('## ', '')}
-          </h2>
-        );
-      }
-      if (line.startsWith('### ')) {
-        return (
-          <h3 key={index} className="text-lg font-display text-foreground/90 mt-4 mb-2">
-            {line.replace('### ', '')}
-          </h3>
-        );
-      }
-      // Checkbox items
-      if (line.startsWith('- [ ] ')) {
-        return (
-          <div key={index} className="flex items-center gap-2 py-1 text-muted-foreground">
-            <div className="w-4 h-4 rounded border border-border/60" />
-            <span className="font-body">{line.replace('- [ ] ', '')}</span>
-          </div>
-        );
-      }
-      if (line.startsWith('- [x] ')) {
-        return (
-          <div key={index} className="flex items-center gap-2 py-1 text-muted-foreground line-through">
-            <div className="w-4 h-4 rounded bg-primary/20 border border-primary/40 flex items-center justify-center">
-              <span className="text-xs text-primary">✓</span>
-            </div>
-            <span className="font-body">{line.replace('- [x] ', '')}</span>
-          </div>
-        );
-      }
-      // Regular list items
-      if (line.startsWith('- ')) {
-        return (
-          <div key={index} className="flex items-start gap-2 py-0.5">
-            <span className="text-primary mt-1">•</span>
-            <span className="font-body text-foreground/80">{line.replace('- ', '')}</span>
-          </div>
-        );
-      }
-      // Empty lines
-      if (line.trim() === '') {
-        return <div key={index} className="h-2" />;
-      }
-      // Regular text
-      return (
-        <p key={index} className="font-body text-foreground/80 leading-relaxed">
-          {line}
-        </p>
-      );
-    });
-  };
-
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleClose}>
       <SheetContent side="right" className="w-full sm:max-w-xl md:max-w-2xl overflow-y-auto">
         <SheetHeader className="pb-4 border-b border-border">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <SheetTitle className="text-2xl font-display text-foreground text-left line-clamp-2">
-                {note.title}
-              </SheetTitle>
+              <Input
+                value={title}
+                onChange={(e) => handleTitleChange(e.target.value)}
+                className="text-2xl font-display text-foreground border-none px-0 focus-visible:ring-0 bg-transparent"
+                placeholder="Note title"
+              />
               <div className="flex items-center gap-3 mt-3 flex-wrap">
                 <Badge variant="outline" className={cn("text-xs", getCategoryColor(note.category))}>
                   <Tag className="w-3 h-3 mr-1" />
@@ -142,8 +141,15 @@ export const NoteDetailSheet = ({
 
         {/* Actions */}
         <div className="flex items-center gap-2 py-4 border-b border-border">
-          <Button variant="outline" size="sm" onClick={() => onEdit(note)} className="gap-2">
-            <Edit2 className="w-4 h-4" /> Edit
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={saveChanges}
+            disabled={!hasChanges || isSaving}
+            className={cn("gap-2", hasChanges && "bg-primary/20 text-primary border-primary/30")}
+          >
+            <Save className="w-4 h-4" />
+            {isSaving ? 'Saving...' : hasChanges ? 'Save' : 'Saved'}
           </Button>
           <Button 
             variant="outline" 
@@ -167,15 +173,14 @@ export const NoteDetailSheet = ({
           </Button>
         </div>
 
-        {/* Content */}
+        {/* Editable Content */}
         <div className="py-6">
-          {note.content ? (
-            <div className="prose prose-invert max-w-none">
-              {renderContent(note.content)}
-            </div>
-          ) : (
-            <p className="text-muted-foreground font-body italic">No content yet. Click edit to add content.</p>
-          )}
+          <Textarea
+            value={content}
+            onChange={(e) => handleContentChange(e.target.value)}
+            placeholder="Start writing your note... (Markdown supported)"
+            className="min-h-[400px] font-mono text-sm border-none focus-visible:ring-0 bg-transparent resize-none"
+          />
         </div>
       </SheetContent>
     </Sheet>

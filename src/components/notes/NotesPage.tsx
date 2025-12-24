@@ -274,14 +274,14 @@ export const NotesPage = () => {
         </div>
       )}
 
-      {/* Half-page Sheet for reading */}
+      {/* Half-page Sheet for editing */}
       <NoteDetailSheet
         note={selectedNote}
         open={isSheetOpen}
         onOpenChange={setIsSheetOpen}
-        onEdit={openEdit}
         onDelete={deleteNote}
         onTogglePin={togglePin}
+        onNoteUpdated={fetchNotes}
       />
     </div>
   );

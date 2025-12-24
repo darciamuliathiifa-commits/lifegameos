@@ -370,7 +370,6 @@ export const AIGYPTSpacePage = () => {
           setIsDetailOpen(open);
           if (!open) setSelectedNote(null);
         }}
-        onEdit={() => {}}
         onDelete={async (id) => {
           await supabase.from('notes').delete().eq('id', id);
           fetchNotes();
@@ -380,6 +379,7 @@ export const AIGYPTSpacePage = () => {
           await supabase.from('notes').update({ is_pinned: !note.is_pinned }).eq('id', note.id);
           fetchNotes();
         }}
+        onNoteUpdated={fetchNotes}
       />
     </div>
   );
