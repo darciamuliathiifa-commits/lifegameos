@@ -9,15 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-border bg-transparent text-foreground hover:bg-muted hover:border-primary/50",
-        secondary: "bg-muted text-foreground hover:bg-muted/80",
-        ghost: "hover:bg-muted hover:text-foreground",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg shadow-destructive/20",
+        outline: "glass-input text-foreground hover:bg-muted/50 hover:border-primary/50",
+        secondary: "glass-input text-foreground hover:bg-muted/50",
+        ghost: "hover:bg-muted/50 hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        gradient: "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90",
-        gaming: "bg-primary text-primary-foreground hover:bg-primary/90",
-        adventure: "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90",
+        gradient: "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 shadow-lg shadow-primary/30",
+        gaming: "glass-button text-foreground hover:text-primary-foreground",
+        adventure: "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 shadow-lg shadow-primary/30",
+        glass: "glass-button text-foreground",
       },
       size: {
         default: "h-10 px-4 py-2",

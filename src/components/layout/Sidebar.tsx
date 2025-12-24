@@ -77,7 +77,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed top-3 left-3 z-50 lg:hidden p-2.5 rounded-lg bg-card/90 border border-primary/20 text-foreground shadow-lg backdrop-blur-sm"
+        className="fixed top-3 left-3 z-50 lg:hidden p-2.5 rounded-xl glass-card text-foreground"
       >
         {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
@@ -85,21 +85,21 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed left-0 top-0 z-40 h-screen bg-sidebar flex flex-col transition-transform duration-300 border-r border-sidebar-border",
+        "fixed left-0 top-0 z-40 h-screen glass-sidebar flex flex-col transition-transform duration-300",
         "w-64 lg:w-64",
         mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border">
+        <div className="h-16 flex items-center justify-between px-5 border-b border-border/20">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-[0_0_15px_hsl(210_100%_55%/0.3)]">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30">
               <IconBolt className="w-5 h-5 text-white" size={20} />
             </div>
             <div>
@@ -109,7 +109,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
               <p className="text-[10px] text-muted-foreground font-body">OS Hub</p>
             </div>
           </div>
-          <button className="hidden lg:flex w-7 h-7 items-center justify-center rounded-md hover:bg-sidebar-accent text-muted-foreground transition-colors">
+          <button className="hidden lg:flex w-7 h-7 items-center justify-center rounded-lg hover:bg-muted/30 text-muted-foreground transition-colors">
             <ChevronLeft className="w-4 h-4" />
           </button>
         </div>
@@ -130,10 +130,10 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                       key={item.id}
                       onClick={() => handleTabChange(item.id)}
                       className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group",
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
                         isActive
-                          ? "bg-primary/15 text-sidebar-foreground border border-primary/20"
-                          : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                          ? "glass-button text-sidebar-foreground"
+                          : "text-muted-foreground hover:bg-muted/20 hover:text-sidebar-foreground"
                       )}
                     >
                       {'customIcon' in item && item.customIcon ? (
@@ -158,7 +158,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                         {item.label}
                       </span>
                       {isActive && (
-                        <div className="w-1.5 h-5 rounded-full bg-primary shadow-[0_0_10px_hsl(210_100%_55%/0.5)]" />
+                        <div className="w-1.5 h-5 rounded-full bg-primary shadow-lg shadow-primary/50" />
                       )}
                     </button>
                   );
