@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
-import { Dashboard } from '@/components/dashboard/Dashboard';
+import { LifePlannerDashboard } from '@/components/dashboard/LifePlannerDashboard';
 import { QuestsPage } from '@/components/quests/QuestsPage';
 import { HabitsPage } from '@/components/habits/HabitsPage';
 import { GoalsPage } from '@/components/goals/GoalsPage';
@@ -10,7 +10,7 @@ import { ProfilePage } from '@/components/profile/ProfilePage';
 import { useGameStore } from '@/hooks/useGameStore';
 import { Helmet } from 'react-helmet-async';
 
-const Index = () => {
+const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const store = useGameStore();
 
@@ -18,7 +18,7 @@ const Index = () => {
     switch (activeTab) {
       case 'dashboard':
         return (
-          <Dashboard
+          <LifePlannerDashboard
             stats={store.stats}
             quests={store.quests}
             habits={store.habits}
@@ -26,6 +26,7 @@ const Index = () => {
             profile={store.profile}
             onCompleteQuest={store.completeQuest}
             onCompleteHabit={store.completeHabit}
+            onNavigate={setActiveTab}
           />
         );
       case 'quests':
@@ -76,8 +77,8 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>LifeGame OS - Gamify Your Life</title>
-        <meta name="description" content="Transform your daily routine into an epic adventure. Track quests, build habits, achieve goals, and level up your life with LifeGame OS." />
+        <title>Dashboard - LifeGame OS Hub</title>
+        <meta name="description" content="Your personal life operating system. Track quests, habits, goals, and achievements." />
       </Helmet>
       
       <div className="min-h-screen bg-background">
@@ -94,4 +95,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default DashboardPage;
