@@ -85,8 +85,8 @@ const DashboardPage = () => {
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
         <Header profile={store.profile} />
         
-        <main className="pl-20 lg:pl-64 pt-20">
-          <div className="p-6 lg:p-8">
+        <main className="pl-20 lg:pl-64 pt-16">
+          <div className="p-4 lg:p-6 max-w-7xl">
             {renderContent()}
           </div>
         </main>
