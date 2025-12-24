@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { Plus, Pyramid, BookOpen, Video, Users, Lightbulb, Calendar, FileText, Sparkles } from 'lucide-react';
+import { Plus, Pyramid, BookOpen, Video, Users, Lightbulb, Calendar, FileText, Sparkles, Target, Eye, Heart, Utensils, Plane, Dumbbell, BookMarked, Film, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 interface SpaceCard {
   id: string;
@@ -79,6 +82,28 @@ const menuCards: SpaceCard[] = [
   },
 ];
 
+interface QuickMenuItem {
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  category: string;
+  defaultContent: string;
+}
+
+const quickMenuItems: QuickMenuItem[] = [
+  { name: 'Planner', icon: Calendar, category: 'planner', defaultContent: '## Planner\n\n### Today\'s Tasks\n- [ ] Task 1\n- [ ] Task 2\n- [ ] Task 3\n\n### Schedule\n- 08:00 - Morning routine\n- 09:00 - Work\n- 12:00 - Lunch\n- 13:00 - Work\n- 18:00 - Evening' },
+  { name: 'Meal Planner', icon: Utensils, category: 'meal', defaultContent: '## Meal Planner\n\n### Breakfast\n- \n\n### Lunch\n- \n\n### Dinner\n- \n\n### Snacks\n- ' },
+  { name: 'Bookshelf', icon: BookMarked, category: 'bookshelf', defaultContent: '## My Bookshelf\n\n### Currently Reading\n- \n\n### Want to Read\n- \n\n### Finished\n- ' },
+  { name: 'Goals', icon: Target, category: 'goals', defaultContent: '## Goals\n\n### Short Term Goals\n- [ ] \n\n### Long Term Goals\n- [ ] \n\n### Progress Notes\n- ' },
+  { name: 'Habits', icon: Heart, category: 'habits', defaultContent: '## Habits Tracker\n\n### Daily Habits\n- [ ] Exercise\n- [ ] Read\n- [ ] Meditate\n- [ ] Drink water\n\n### Weekly Review\n- ' },
+  { name: 'Travel Planner', icon: Plane, category: 'travel', defaultContent: '## Travel Planner\n\n### Destination\n- \n\n### Dates\n- \n\n### Packing List\n- [ ] Passport\n- [ ] Tickets\n- [ ] Clothes\n\n### Itinerary\n- ' },
+  { name: 'Movies & Series', icon: Film, category: 'movies', defaultContent: '## Movies & Series\n\n### Watching\n- \n\n### Want to Watch\n- \n\n### Watched\n- ' },
+  { name: 'Vision', icon: Eye, category: 'vision', defaultContent: '## Vision Board\n\n### My Vision\n- \n\n### Dreams & Aspirations\n- \n\n### Inspiration\n- ' },
+  { name: 'Journal', icon: FileText, category: 'journal', defaultContent: '## Journal Entry\n\n### Date: ' + new Date().toLocaleDateString() + '\n\n### Thoughts\n- \n\n### Gratitude\n- \n\n### Reflections\n- ' },
+  { name: 'Workout Planner', icon: Dumbbell, category: 'workout', defaultContent: '## Workout Planner\n\n### Today\'s Workout\n- [ ] Warm up\n- [ ] Cardio\n- [ ] Strength\n- [ ] Cool down\n\n### Weekly Schedule\n- Monday: \n- Tuesday: \n- Wednesday: \n- Thursday: \n- Friday: ' },
+  { name: 'Finance', icon: Wallet, category: 'finance', defaultContent: '## Finance Tracker\n\n### Income\n- \n\n### Expenses\n- \n\n### Savings Goals\n- \n\n### Notes\n- ' },
+  { name: 'Health', icon: Heart, category: 'health', defaultContent: '## Health Tracker\n\n### Daily Health Log\n- Sleep: hours\n- Water: glasses\n- Exercise: \n- Mood: \n\n### Notes\n- ' },
+];
+
 const quickLinks = [
   { name: 'AI Courses', icon: BookOpen },
   { name: 'Webinars', icon: Video },
@@ -88,7 +113,35 @@ const quickLinks = [
 ];
 
 export const AIGYPTSpacePage = () => {
+  const { user } = useAuth();
   const [cards] = useState<SpaceCard[]>(menuCards);
+  const [isCreating, setIsCreating] = useState<string | null>(null);
+
+  const createNoteFromMenu = async (menuItem: QuickMenuItem) => {
+    if (!user) {
+      toast.error('Please login first');
+      return;
+    }
+
+    setIsCreating(menuItem.name);
+
+    const { error } = await supabase
+      .from('notes')
+      .insert({
+        user_id: user.id,
+        title: menuItem.name,
+        content: menuItem.defaultContent,
+        category: menuItem.category,
+      });
+
+    if (error) {
+      toast.error('Failed to create note');
+    } else {
+      toast.success(`${menuItem.name} note created!`);
+    }
+    
+    setIsCreating(null);
+  };
 
   return (
     <div className="space-y-6 animate-slide-up">
@@ -115,6 +168,30 @@ export const AIGYPTSpacePage = () => {
           <span className="italic text-muted-foreground">Empowering Indonesian Students with AI! 🚀</span>
         </div>
       </div>
+
+      {/* Quick Menu Grid - NEW */}
+      <Card className="bg-secondary/5 border-secondary/20">
+        <CardContent className="py-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {quickMenuItems.map((item) => {
+              const IconComponent = item.icon;
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => createNoteFromMenu(item)}
+                  disabled={isCreating === item.name}
+                  className="flex items-center gap-2 p-3 rounded-lg hover:bg-secondary/10 transition-colors text-left group disabled:opacity-50"
+                >
+                  <IconComponent className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-body text-muted-foreground group-hover:text-foreground transition-colors">
+                    {isCreating === item.name ? 'Creating...' : item.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-4 gap-6">
