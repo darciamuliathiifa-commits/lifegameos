@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Plus, ChevronDown, ChevronLeft, ChevronRight, Check, MoreHorizontal } from 'lucide-react';
+import { Plus, ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Loader2 } from 'lucide-react';
 import { Quest, Habit, Goal, Stats, UserProfile } from '@/types/game';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, addDays } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday, addDays, startOfDay } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   IconCalendar, IconHabits, IconJournal, IconMeal, IconTravel, IconWorkout,
   IconBook, IconMovie, IconWallet, IconTarget, IconVision, IconHeart,
@@ -30,77 +32,21 @@ interface LifePlannerDashboardProps {
   onNavigate: (tab: string) => void;
 }
 
-// Dummy data for demonstration
-const dummyTodos = [
-  { id: '1', title: 'Write blog post', category: 'Work', dueDate: '2024-01-26', priority: 'High' },
-  { id: '2', title: 'Write blog post', category: 'Work', dueDate: '2024-01-27', priority: 'High' },
-  { id: '3', title: 'Meet Carl', category: 'Life', dueDate: '2024-01-27', priority: null },
-  { id: '4', title: 'Edit Photo', category: 'Work', dueDate: '2024-01-28', priority: null },
-  { id: '5', title: 'Write blog post', category: 'Work', dueDate: '2024-01-28', priority: 'High' },
-  { id: '6', title: 'Edit Website', category: 'Work', dueDate: '2024-02-12', priority: 'High' },
-  { id: '7', title: 'Create Social Content', category: 'Life', dueDate: '2024-02-13', priority: null },
-  { id: '8', title: 'Run', category: 'Health', dueDate: '2024-02-14', priority: null },
-  { id: '9', title: 'Edit Website', category: 'Work', dueDate: '2024-02-19', priority: 'High' },
-  { id: '10', title: 'Write copy', category: 'Work', dueDate: '2024-02-19', priority: 'High' },
-];
+interface FinanceTransaction {
+  id: string;
+  type: string;
+  amount: number;
+  title: string;
+  date: string;
+}
 
-const dummyCalendarEvents = [
-  { date: new Date(2024, 1, 12), title: 'Edit', category: 'Work', priority: 'High' },
-  { date: new Date(2024, 1, 13), title: 'Create', category: 'Life', priority: null },
-  { date: new Date(2024, 1, 14), title: 'Run', category: 'Health', priority: null },
-  { date: new Date(2024, 1, 19), title: 'Edit', category: 'Work', priority: 'High' },
-  { date: new Date(2024, 1, 20), title: 'Edit Photo', category: 'Life', priority: null },
-  { date: new Date(2024, 1, 21), title: 'Create', category: 'Work', priority: null },
-  { date: new Date(2024, 1, 22), title: 'Edit', category: 'Personal', priority: 'High' },
-  { date: new Date(2024, 1, 23), title: 'Run', category: 'Health', priority: null },
-  { date: new Date(2024, 1, 24), title: 'Edit Photo', category: 'Health', priority: null },
-  { date: new Date(2024, 1, 26), title: 'Record', category: 'Work', priority: 'High' },
-  { date: new Date(2024, 1, 27), title: 'Go', category: 'Health', priority: 'High' },
-  { date: new Date(2024, 1, 28), title: 'Create', category: 'Life', priority: null },
-];
-
-const dummyUpcoming = {
-  today: [
-    { id: 't1', title: 'Edit Website', priority: 'High' },
-    { id: 't2', title: 'Write copy', priority: 'High' },
-  ],
-  tomorrow: [
-    { id: 'tm1', title: 'Edit Photo', priority: null },
-    { id: 'tm2', title: 'Write blog post', priority: 'High' },
-  ],
-  next7days: [
-    { id: 'n1', title: 'Run', priority: null },
-    { id: 'n2', title: 'Edit Website', priority: 'High' },
-    { id: 'n3', title: 'Record video', priority: 'High' },
-    { id: 'n4', title: 'Create Social Content', priority: null },
-    { id: 'n5', title: 'Call Repairman', priority: null },
-    { id: 'n6', title: 'Edit Photo', priority: null },
-    { id: 'n7', title: 'Manage Finance', priority: null },
-  ],
-};
-
-const dummyHabits = [
-  { name: 'Workout', icon: '💪', completed: false },
-  { name: 'Meditate', icon: '🧘', completed: false },
-  { name: 'Read', icon: '📚', completed: false },
-  { name: 'Run', icon: '🏃', completed: false },
-  { name: 'Cold Shower', icon: '🥶', completed: false },
-];
-
-const dummyMeals = [
-  { type: 'Dinner', day: 'Monday', name: 'Chicken Noodle Soup' },
-  { type: 'Lunch', day: 'Monday', name: 'Brick-Oven Pizza (Brooklyn Style)' },
-  { type: 'Breakfast', day: 'Monday', name: '' },
-];
-
-const dummyShopping = [
-  '6 leaves fresh basil, torn',
-  '3 cups bread flour',
-  '1 tablespoon extra-virgin olive...',
-  '2 tablespoons extra-virgin oli...',
-  'Onion',
-  '1 cup cold water',
-];
+interface Note {
+  id: string;
+  title: string;
+  content: string | null;
+  category: string | null;
+  created_at: string;
+}
 
 const categoryCards = [
   { 
@@ -134,7 +80,7 @@ const categoryCards = [
       { name: 'Movies & Series', Icon: IconMovie },
       { name: 'Finance', Icon: IconWallet }
     ],
-    tab: 'goals'
+    tab: 'finance'
   },
   { 
     id: 'goals', 
@@ -159,10 +105,14 @@ const overviewTabs = [
 
 const getCategoryStyle = (category: string) => {
   switch(category.toLowerCase()) {
-    case 'work': return { bg: 'bg-primary/15', text: 'text-primary', dot: 'bg-primary' };
+    case 'work': 
+    case 'productivity': return { bg: 'bg-primary/15', text: 'text-primary', dot: 'bg-primary' };
     case 'health': return { bg: 'bg-destructive/15', text: 'text-destructive', dot: 'bg-destructive' };
-    case 'life': return { bg: 'bg-secondary/15', text: 'text-secondary', dot: 'bg-secondary' };
-    case 'personal': return { bg: 'bg-accent/15', text: 'text-accent', dot: 'bg-accent' };
+    case 'life': 
+    case 'social': return { bg: 'bg-secondary/15', text: 'text-secondary', dot: 'bg-secondary' };
+    case 'personal':
+    case 'creative': return { bg: 'bg-accent/15', text: 'text-accent', dot: 'bg-accent' };
+    case 'learning': return { bg: 'bg-success/15', text: 'text-success', dot: 'bg-success' };
     default: return { bg: 'bg-muted', text: 'text-muted-foreground', dot: 'bg-muted-foreground' };
   }
 };
@@ -177,18 +127,52 @@ export const LifePlannerDashboard = ({
   onCompleteHabit,
   onNavigate,
 }: LifePlannerDashboardProps) => {
+  const { user } = useAuth();
   const [activeOverviewTab, setActiveOverviewTab] = useState('Todo');
-  const [currentMonth, setCurrentMonth] = useState(new Date(2024, 1, 1)); // February 2024 for demo
-  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
-  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [financeData, setFinanceData] = useState<{ income: number; expenses: number }>({ income: 0, expenses: 0 });
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const toggleCheck = (id: string) => {
-    setCheckedItems(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
+
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    
+    // Fetch finance data for current month
+    const startOfCurrentMonth = startOfMonth(new Date()).toISOString();
+    const endOfCurrentMonth = endOfMonth(new Date()).toISOString();
+    
+    const { data: transactions } = await supabase
+      .from('finance_transactions')
+      .select('*')
+      .gte('date', startOfCurrentMonth.split('T')[0])
+      .lte('date', endOfCurrentMonth.split('T')[0]);
+
+    if (transactions) {
+      const income = transactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      const expenses = transactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      setFinanceData({ income, expenses });
+    }
+
+    // Fetch recent notes
+    const { data: notesData } = await supabase
+      .from('notes')
+      .select('*')
+      .order('updated_at', { ascending: false })
+      .limit(5);
+
+    if (notesData) setNotes(notesData);
+    
+    setIsLoading(false);
   };
 
   // Calendar logic
@@ -204,14 +188,41 @@ export const LifePlannerDashboard = ({
   const { days, paddingDays } = getDaysInMonth();
   const monthName = format(currentMonth, 'MMMM yyyy');
 
-  const getEventsForDate = (date: Date) => {
-    return dummyCalendarEvents.filter(e => isSameDay(e.date, date));
+  // Get quests for a specific date
+  const getQuestsForDate = (date: Date) => {
+    return quests.filter(q => {
+      if (!q.dueDate) return false;
+      return isSameDay(new Date(q.dueDate), date);
+    });
   };
 
+  // Group quests by time period
+  const today = startOfDay(new Date());
+  const tomorrow = addDays(today, 1);
+  const nextWeek = addDays(today, 7);
+
+  const todayQuests = quests.filter(q => !q.completed && q.dueDate && isSameDay(new Date(q.dueDate), today));
+  const tomorrowQuests = quests.filter(q => !q.completed && q.dueDate && isSameDay(new Date(q.dueDate), tomorrow));
+  const next7DaysQuests = quests.filter(q => {
+    if (q.completed || !q.dueDate) return false;
+    const dueDate = new Date(q.dueDate);
+    return dueDate > tomorrow && dueDate <= nextWeek;
+  });
+
+  const activeQuests = quests.filter(q => !q.completed).slice(0, 10);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-8 animate-slide-up pb-8">
+    <div className="space-y-8 pb-8">
       {/* Hero Banner */}
-      <div className="relative h-32 md:h-40 -mx-4 md:-mx-6 -mt-4 md:-mt-6 overflow-hidden rounded-b-2xl">
+      <div className="relative h-32 md:h-40 -mx-4 md:-mx-6 -mt-4 md:-mt-6 overflow-hidden rounded-b-2xl animate-fade-in">
         <img 
           src={cardDaily} 
           alt="Life Planner Banner" 
@@ -226,7 +237,7 @@ export const LifePlannerDashboard = ({
       </div>
 
       {/* Title Section */}
-      <div className="space-y-2 px-2">
+      <div className="space-y-2 px-2 animate-slide-up" style={{ animationDelay: '50ms' }}>
         <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">
           Life Planner
         </h1>
@@ -242,9 +253,8 @@ export const LifePlannerDashboard = ({
           <div
             key={card.id}
             className="space-y-3 animate-slide-up"
-            style={{ animationDelay: `${index * 50}ms` }}
+            style={{ animationDelay: `${100 + index * 50}ms` }}
           >
-            {/* Image Card */}
             <button
               onClick={() => onNavigate(card.tab)}
               className="relative w-full aspect-[4/3] rounded-xl overflow-hidden group"
@@ -262,7 +272,6 @@ export const LifePlannerDashboard = ({
               </div>
             </button>
             
-            {/* Sub Items */}
             <div className="space-y-1">
               {card.items.map((item) => (
                 <button
@@ -280,13 +289,12 @@ export const LifePlannerDashboard = ({
       </div>
 
       {/* Overview Section */}
-      <div className="space-y-4 px-2">
+      <div className="space-y-4 px-2 animate-slide-up" style={{ animationDelay: '300ms' }}>
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground">—</span>
           <h2 className="font-display text-lg text-foreground">Overview</h2>
         </div>
 
-        {/* Tabs */}
         <div className="flex items-center gap-1 flex-wrap">
           {overviewTabs.map((tab) => (
             <button
@@ -308,7 +316,6 @@ export const LifePlannerDashboard = ({
           </button>
         </div>
 
-        {/* Overview Grid - Table + Music Player */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Task Table */}
           <div className="lg:col-span-2">
@@ -334,60 +341,68 @@ export const LifePlannerDashboard = ({
                         <span className="flex items-center gap-1">📅 Due Date</span>
                       </th>
                       <th className="p-3 w-16">
-                        <span className="flex items-center gap-1">⚠️ P...</span>
+                        <span className="flex items-center gap-1">⚠️ XP</span>
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {dummyTodos.map((todo) => {
-                      const style = getCategoryStyle(todo.category);
-                      return (
-                        <tr 
-                          key={todo.id} 
-                          className="border-b border-border/30 hover:bg-muted/20 transition-colors"
-                        >
-                          <td className="p-3">
-                            <Checkbox
-                              checked={checkedItems.has(todo.id)}
-                              onCheckedChange={() => toggleCheck(todo.id)}
-                              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                            />
-                          </td>
-                          <td className="p-3">
-                            <div className={cn(
-                              "w-4 h-4 rounded-full border-2",
-                              style.text,
-                              "border-current"
-                            )} />
-                          </td>
-                          <td className={cn(
-                            "p-3 text-sm",
-                            checkedItems.has(todo.id) ? "text-muted-foreground line-through" : "text-foreground"
-                          )}>
-                            {todo.title}
-                          </td>
-                          <td className="p-3 hidden md:table-cell">
-                            <span className={cn(
-                              "inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs",
-                              style.bg, style.text
+                    {activeQuests.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                          No tasks yet. Add your first task!
+                        </td>
+                      </tr>
+                    ) : (
+                      activeQuests.map((quest) => {
+                        const style = getCategoryStyle(quest.category);
+                        return (
+                          <tr 
+                            key={quest.id} 
+                            className="border-b border-border/30 hover:bg-muted/20 transition-colors"
+                          >
+                            <td className="p-3">
+                              <Checkbox
+                                checked={quest.completed}
+                                onCheckedChange={() => onCompleteQuest(quest.id)}
+                                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                              />
+                            </td>
+                            <td className="p-3">
+                              <div className={cn(
+                                "w-4 h-4 rounded-full border-2",
+                                style.text,
+                                "border-current"
+                              )} />
+                            </td>
+                            <td className={cn(
+                              "p-3 text-sm",
+                              quest.completed ? "text-muted-foreground line-through" : "text-foreground"
                             )}>
-                              <span className={cn("w-1.5 h-1.5 rounded-full", style.dot)} />
-                              {todo.category}
-                            </span>
-                          </td>
-                          <td className="p-3 text-xs text-muted-foreground hidden lg:table-cell">
-                            {format(new Date(todo.dueDate), 'MMMM d, yyyy')}
-                          </td>
-                          <td className="p-3">
-                            {todo.priority === 'High' && (
-                              <span className="px-2 py-0.5 rounded text-xs bg-destructive/15 text-destructive font-medium">
-                                High
+                              {quest.title}
+                            </td>
+                            <td className="p-3 hidden md:table-cell">
+                              <span className={cn(
+                                "inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs capitalize",
+                                style.bg, style.text
+                              )}>
+                                <span className={cn("w-1.5 h-1.5 rounded-full", style.dot)} />
+                                {quest.category}
                               </span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                            </td>
+                            <td className="p-3 text-xs text-muted-foreground hidden lg:table-cell">
+                              {quest.dueDate ? format(new Date(quest.dueDate), 'MMM d, yyyy') : '—'}
+                            </td>
+                            <td className="p-3">
+                              {quest.xpReward >= 50 && (
+                                <span className="px-2 py-0.5 rounded text-xs bg-destructive/15 text-destructive font-medium">
+                                  {quest.xpReward}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -417,7 +432,7 @@ export const LifePlannerDashboard = ({
       </div>
 
       {/* Calendar & Upcoming Section */}
-      <div className="grid lg:grid-cols-3 gap-6 px-2">
+      <div className="grid lg:grid-cols-3 gap-6 px-2 animate-slide-up" style={{ animationDelay: '400ms' }}>
         {/* Calendar */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center gap-2">
@@ -425,7 +440,6 @@ export const LifePlannerDashboard = ({
             <h2 className="font-display text-lg text-foreground">Calendar</h2>
           </div>
 
-          {/* Calendar Tabs */}
           <div className="flex items-center gap-1 flex-wrap">
             {overviewTabs.slice(0, 4).map((tab) => (
               <button
@@ -444,10 +458,8 @@ export const LifePlannerDashboard = ({
             <button className="px-3 py-1.5 text-sm text-muted-foreground">2 more...</button>
           </div>
 
-          {/* Calendar */}
           <Card className="border-border/50">
             <CardContent className="py-5">
-              {/* Month Navigation */}
               <div className="flex items-center justify-between mb-4">
                 <span className="font-display text-lg text-foreground">{monthName}</span>
                 <div className="flex items-center gap-2">
@@ -481,57 +493,57 @@ export const LifePlannerDashboard = ({
                 </div>
               </div>
 
-              {/* Days of Week */}
               <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground mb-2">
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
                   <div key={day} className="py-2 font-medium">{day}</div>
                 ))}
               </div>
 
-              {/* Calendar Grid */}
               <div className="grid grid-cols-7 gap-1">
                 {Array.from({ length: paddingDays }).map((_, index) => (
-                  <div key={`padding-${index}`} className="aspect-square p-1 text-center text-sm text-muted-foreground/50">
-                    {index === paddingDays - 1 ? 29 + index - paddingDays + 1 : ''}
-                  </div>
+                  <div key={`padding-${index}`} className="aspect-square p-1" />
                 ))}
                 
                 {days.map((date) => {
-                  const events = getEventsForDate(date);
-                  const isToday = format(date, 'yyyy-MM-dd') === '2024-02-19'; // Demo today
+                  const dayQuests = getQuestsForDate(date);
+                  const isTodayDate = isToday(date);
                   
                   return (
                     <div
                       key={date.toISOString()}
                       className={cn(
                         "min-h-[80px] p-1 rounded-lg text-sm relative border border-transparent transition-colors",
-                        isToday && "bg-primary/10 ring-2 ring-primary",
-                        !isToday && "hover:bg-muted/30"
+                        isTodayDate && "bg-primary/10 ring-2 ring-primary",
+                        !isTodayDate && "hover:bg-muted/30"
                       )}
                     >
                       <span className={cn(
                         "block text-center mb-1",
-                        isToday ? "text-primary font-bold" : "text-muted-foreground"
+                        isTodayDate ? "text-primary font-bold" : "text-muted-foreground"
                       )}>
                         {format(date, 'd')}
                       </span>
                       
-                      {/* Events */}
                       <div className="space-y-0.5">
-                        {events.slice(0, 3).map((event, idx) => {
-                          const style = getCategoryStyle(event.category);
+                        {dayQuests.slice(0, 3).map((quest) => {
+                          const style = getCategoryStyle(quest.category);
                           return (
                             <div 
-                              key={idx}
+                              key={quest.id}
                               className={cn(
                                 "text-[10px] truncate rounded px-1 py-0.5",
                                 style.bg, style.text
                               )}
                             >
-                              {event.title}
+                              {quest.title.substring(0, 10)}
                             </div>
                           );
                         })}
+                        {dayQuests.length > 3 && (
+                          <div className="text-[10px] text-muted-foreground text-center">
+                            +{dayQuests.length - 3}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -560,22 +572,33 @@ export const LifePlannerDashboard = ({
                 <button className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                   <ChevronDown className="w-3 h-3" />
                   <span className="text-primary">Today</span>
-                  <span className="text-xs">{dummyUpcoming.today.length}</span>
+                  <span className="text-xs">{todayQuests.length}</span>
                 </button>
                 <div className="space-y-2 pl-4">
-                  {dummyUpcoming.today.map((task) => (
-                    <div key={task.id} className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full border-2 border-primary" />
-                      <span className="text-sm text-foreground flex-1">{task.title}</span>
-                      {task.priority && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-destructive/15 text-destructive">
-                          High
-                        </span>
-                      )}
-                      <Checkbox className="w-4 h-4" />
-                    </div>
-                  ))}
-                  <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
+                  {todayQuests.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">No tasks for today</p>
+                  ) : (
+                    todayQuests.slice(0, 3).map((quest) => (
+                      <div key={quest.id} className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full border-2 border-primary" />
+                        <span className="text-sm text-foreground flex-1 truncate">{quest.title}</span>
+                        {quest.xpReward >= 50 && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-destructive/15 text-destructive">
+                            High
+                          </span>
+                        )}
+                        <Checkbox 
+                          className="w-4 h-4" 
+                          checked={quest.completed}
+                          onCheckedChange={() => onCompleteQuest(quest.id)}
+                        />
+                      </div>
+                    ))
+                  )}
+                  <button 
+                    onClick={() => onNavigate('quests')}
+                    className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+                  >
                     <Plus className="w-3 h-3" /> New
                   </button>
                 </div>
@@ -586,24 +609,29 @@ export const LifePlannerDashboard = ({
                 <button className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                   <ChevronDown className="w-3 h-3" />
                   <span className="text-primary">Tomorrow</span>
-                  <span className="text-xs">{dummyUpcoming.tomorrow.length}</span>
+                  <span className="text-xs">{tomorrowQuests.length}</span>
                 </button>
                 <div className="space-y-2 pl-4">
-                  {dummyUpcoming.tomorrow.map((task) => (
-                    <div key={task.id} className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full border-2 border-secondary" />
-                      <span className="text-sm text-foreground flex-1">{task.title}</span>
-                      {task.priority && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-destructive/15 text-destructive">
-                          High
-                        </span>
-                      )}
-                      <Checkbox className="w-4 h-4" />
-                    </div>
-                  ))}
-                  <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
-                    <Plus className="w-3 h-3" /> New
-                  </button>
+                  {tomorrowQuests.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">No tasks for tomorrow</p>
+                  ) : (
+                    tomorrowQuests.slice(0, 3).map((quest) => (
+                      <div key={quest.id} className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full border-2 border-secondary" />
+                        <span className="text-sm text-foreground flex-1 truncate">{quest.title}</span>
+                        {quest.xpReward >= 50 && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-destructive/15 text-destructive">
+                            High
+                          </span>
+                        )}
+                        <Checkbox 
+                          className="w-4 h-4"
+                          checked={quest.completed}
+                          onCheckedChange={() => onCompleteQuest(quest.id)}
+                        />
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -612,37 +640,38 @@ export const LifePlannerDashboard = ({
                 <button className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                   <ChevronDown className="w-3 h-3" />
                   <span className="text-primary">Next 7 days</span>
-                  <span className="text-xs">{dummyUpcoming.next7days.length}</span>
+                  <span className="text-xs">{next7DaysQuests.length}</span>
                 </button>
                 <div className="space-y-2 pl-4">
-                  {dummyUpcoming.next7days.slice(0, 5).map((task) => (
-                    <div key={task.id} className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full border-2 border-muted-foreground" />
-                      <span className="text-sm text-foreground flex-1">{task.title}</span>
-                      {task.priority && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-destructive/15 text-destructive">
-                          High
-                        </span>
-                      )}
-                      <Checkbox className="w-4 h-4" />
-                    </div>
-                  ))}
-                  <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
-                    <Plus className="w-3 h-3" /> New
-                  </button>
+                  {next7DaysQuests.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">No upcoming tasks</p>
+                  ) : (
+                    next7DaysQuests.slice(0, 5).map((quest) => (
+                      <div key={quest.id} className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full border-2 border-muted-foreground" />
+                        <span className="text-sm text-foreground flex-1 truncate">{quest.title}</span>
+                        {quest.xpReward >= 50 && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-destructive/15 text-destructive">
+                            High
+                          </span>
+                        )}
+                        <Checkbox 
+                          className="w-4 h-4"
+                          checked={quest.completed}
+                          onCheckedChange={() => onCompleteQuest(quest.id)}
+                        />
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
-
-              <button className="text-xs text-muted-foreground hover:text-foreground">
-                ▽ 2 hidden groups
-              </button>
             </CardContent>
           </Card>
         </div>
       </div>
 
       {/* Bottom Widgets Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-2 animate-slide-up" style={{ animationDelay: '500ms' }}>
         {/* Habit Tracker */}
         <Card className="border-border/50">
           <CardContent className="py-4">
@@ -659,82 +688,121 @@ export const LifePlannerDashboard = ({
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <div className="w-3 h-3 rounded-full border-2 border-destructive" />
-                <span className="text-sm">Monday</span>
+                <span className="text-sm">{format(new Date(), 'EEEE')}</span>
               </div>
-              <div className="text-xs text-muted-foreground">0%</div>
+              <div className="text-xs text-muted-foreground">
+                {habits.filter(h => h.completedToday).length}/{habits.length} completed
+              </div>
               
               <div className="space-y-2">
-                {dummyHabits.map((habit, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-sm">
-                    <Checkbox className="w-4 h-4" />
+                {habits.slice(0, 5).map((habit) => (
+                  <div key={habit.id} className="flex items-center gap-2 text-sm">
+                    <Checkbox 
+                      className="w-4 h-4"
+                      checked={habit.completedToday}
+                      onCheckedChange={() => onCompleteHabit(habit.id)}
+                    />
                     <span className="text-xs">{habit.icon}</span>
-                    <span className="text-muted-foreground">{habit.name}</span>
+                    <span className={cn(
+                      "text-muted-foreground",
+                      habit.completedToday && "line-through"
+                    )}>
+                      {habit.name}
+                    </span>
                   </div>
                 ))}
               </div>
 
-              <Button variant="outline" size="sm" className="w-full mt-2 text-xs">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full mt-2 text-xs"
+                onClick={() => onNavigate('habits')}
+              >
                 <Plus className="w-3 h-3 mr-1" /> New
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Meal Planner */}
+        {/* Goals Progress */}
         <Card className="border-border/50">
           <CardContent className="py-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">—</span>
-                <h3 className="font-display text-sm text-foreground">Meal Planner</h3>
+                <h3 className="font-display text-sm text-foreground">Goals</h3>
               </div>
               <button className="flex items-center gap-1 text-xs text-muted-foreground">
-                🍴 Today <ChevronDown className="w-3 h-3" />
+                🎯 Active <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             
             <div className="space-y-3">
-              {dummyMeals.map((meal, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs">🍽️</span>
-                    <span className="text-sm text-foreground">{meal.type}</span>
+              {goals.slice(0, 3).map((goal) => (
+                <div key={goal.id} className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-foreground truncate">{goal.title}</span>
+                    <span className="text-xs text-muted-foreground">{goal.progress}%</span>
                   </div>
-                  <span className="inline-block px-2 py-0.5 rounded text-[10px] bg-primary/15 text-primary">
-                    {meal.day}
-                  </span>
-                  {meal.name && (
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      🥘 {meal.name}
-                    </p>
-                  )}
+                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary rounded-full transition-all"
+                      style={{ width: `${goal.progress}%` }}
+                    />
+                  </div>
                 </div>
               ))}
+              
+              {goals.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center py-4">No active goals</p>
+              )}
+
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full mt-2 text-xs"
+                onClick={() => onNavigate('goals')}
+              >
+                <Plus className="w-3 h-3 mr-1" /> New Goal
+              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Shopping List */}
+        {/* Recent Notes */}
         <Card className="border-border/50">
           <CardContent className="py-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">—</span>
-                <h3 className="font-display text-sm text-foreground">Shopping List</h3>
+                <h3 className="font-display text-sm text-foreground">Recent Notes</h3>
               </div>
               <button className="flex items-center gap-1 text-xs text-muted-foreground">
-                🛒 Shopping List <ChevronDown className="w-3 h-3" />
+                📝 All <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             
             <div className="space-y-2">
-              {dummyShopping.map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-sm">
+              {notes.slice(0, 4).map((note) => (
+                <button
+                  key={note.id}
+                  onClick={() => onNavigate('notes')}
+                  className="flex items-center gap-2 text-sm w-full text-left hover:bg-muted/30 rounded p-1 -m-1 transition-colors"
+                >
                   <span className="text-muted-foreground">≡</span>
-                  <span className="text-muted-foreground truncate">{item}</span>
-                </div>
+                  <span className="text-foreground truncate flex-1">{note.title}</span>
+                </button>
               ))}
-              <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mt-2">
+              
+              {notes.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center py-4">No notes yet</p>
+              )}
+              
+              <button 
+                onClick={() => onNavigate('notes')}
+                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mt-2"
+              >
                 <Plus className="w-3 h-3" /> New
               </button>
             </div>
@@ -756,28 +824,37 @@ export const LifePlannerDashboard = ({
             
             <div className="space-y-3">
               <div className="p-3 rounded-lg bg-muted/30">
-                <p className="text-xs text-muted-foreground">📅 2024 February</p>
+                <p className="text-xs text-muted-foreground">📅 {format(new Date(), 'yyyy MMMM')}</p>
               </div>
               
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Total Income</span>
-                  <span className="text-foreground">$0.00</span>
+                  <span className="text-success">${financeData.income.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Total Expenses</span>
-                  <span className="text-foreground">$0.00</span>
+                  <span className="text-destructive">${financeData.expenses.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-border/50">
                   <span className="text-muted-foreground">Balance</span>
-                  <span className="text-foreground font-medium">$0.00</span>
+                  <span className={cn(
+                    "font-medium",
+                    financeData.income - financeData.expenses >= 0 ? "text-success" : "text-destructive"
+                  )}>
+                    ${(financeData.income - financeData.expenses).toFixed(2)}
+                  </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 text-xs text-success">
-                <span>↑</span>
-                <span>0% vs Last Month</span>
-              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full text-xs"
+                onClick={() => onNavigate('finance')}
+              >
+                View Details
+              </Button>
             </div>
           </CardContent>
         </Card>
