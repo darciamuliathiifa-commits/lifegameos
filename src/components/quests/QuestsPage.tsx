@@ -62,60 +62,62 @@ export const QuestsPage = ({
   };
 
   return (
-    <div className="space-y-6 animate-slide-up">
+    <div className="space-y-4 md:space-y-6 animate-slide-up">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center justify-between md:gap-4">
         <div>
-          <h1 className="text-3xl font-display text-foreground flex items-center gap-3">
-            <Target className="w-8 h-8 text-primary" />
+          <h1 className="text-xl md:text-3xl font-display text-foreground flex items-center gap-2 md:gap-3">
+            <Target className="w-6 h-6 md:w-8 md:h-8 text-primary" />
             Misi Harian
           </h1>
-          <p className="text-muted-foreground font-body mt-1">
+          <p className="text-muted-foreground font-body text-xs md:text-base mt-1">
             Selesaikan misi untuk mendapatkan XP dan naik level
           </p>
         </div>
-        <Button variant="gaming" onClick={() => setIsDialogOpen(true)} className="gap-2">
-          <Plus className="w-5 h-5" />
+        <Button variant="gaming" onClick={() => setIsDialogOpen(true)} className="gap-2 w-full md:w-auto">
+          <Plus className="w-4 h-4 md:w-5 md:h-5" />
           Misi Baru
         </Button>
       </div>
 
       {/* Stats */}
-      <div className="flex gap-4">
-        <div className="card-gaming rounded-lg px-4 py-3">
-          <span className="text-2xl font-display text-primary">{activeCount}</span>
-          <span className="text-sm text-muted-foreground font-body ml-2">Aktif</span>
+      <div className="flex gap-2 md:gap-4">
+        <div className="card-gaming rounded-lg px-3 md:px-4 py-2 md:py-3 flex-1 md:flex-none">
+          <span className="text-lg md:text-2xl font-display text-primary">{activeCount}</span>
+          <span className="text-xs md:text-sm text-muted-foreground font-body ml-1 md:ml-2">Aktif</span>
         </div>
-        <div className="card-gaming rounded-lg px-4 py-3">
-          <span className="text-2xl font-display text-success">{completedCount}</span>
-          <span className="text-sm text-muted-foreground font-body ml-2">Selesai</span>
+        <div className="card-gaming rounded-lg px-3 md:px-4 py-2 md:py-3 flex-1 md:flex-none">
+          <span className="text-lg md:text-2xl font-display text-success">{completedCount}</span>
+          <span className="text-xs md:text-sm text-muted-foreground font-body ml-1 md:ml-2">Selesai</span>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="space-y-2">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <Filter className="w-4 h-4" />
-          <span className="text-sm font-body">Filter:</span>
+          <Filter className="w-3 h-3 md:w-4 md:h-4" />
+          <span className="text-xs md:text-sm font-body">Filter:</span>
         </div>
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setFilter(cat)}
-            className={cn(
-              "px-3 py-1.5 rounded-lg text-sm font-body uppercase tracking-wider transition-all",
-              filter === cat
-                ? "bg-primary text-primary-foreground shadow-[0_0_15px_hsl(var(--primary)/0.4)]"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {categoryLabels[cat]}
-          </button>
-        ))}
+        <div className="flex flex-wrap gap-1.5 md:gap-2">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setFilter(cat)}
+              className={cn(
+                "px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-[10px] md:text-sm font-body uppercase tracking-wider transition-all",
+                filter === cat
+                  ? "bg-primary text-primary-foreground shadow-[0_0_15px_hsl(var(--primary)/0.4)]"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {categoryLabels[cat]}
+            </button>
+          ))}
+        </div>
         <button
           onClick={() => setShowCompleted(!showCompleted)}
           className={cn(
-            "px-3 py-1.5 rounded-lg text-sm font-body transition-all ml-auto",
+            "px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-[10px] md:text-sm font-body transition-all",
             showCompleted
               ? "bg-success/20 text-success"
               : "bg-muted text-muted-foreground hover:text-foreground"
