@@ -80,6 +80,31 @@ export const CATEGORY_ICONS: Record<Category, string> = {
 
 export const XP_PER_LEVEL = 1000;
 
+// Sistem Gelar berdasarkan level
+export const TITLES: Record<number, string> = {
+  1: 'Petualang Pemula',
+  10: 'Penjelajah Muda',
+  20: 'Pahlawan Terlatih',
+  30: 'Ksatria Berpengalaman',
+  40: 'Sang Penakluk',
+  50: 'Master Kehidupan',
+  60: 'Legenda Hidup',
+  70: 'Sang Bijaksana',
+  80: 'Penjaga Waktu',
+  90: 'Dewa Produktivitas',
+  100: 'Raja Semesta',
+};
+
+export const getTitleForLevel = (level: number): string => {
+  const thresholds = Object.keys(TITLES).map(Number).sort((a, b) => b - a);
+  for (const threshold of thresholds) {
+    if (level >= threshold) {
+      return TITLES[threshold];
+    }
+  }
+  return TITLES[1];
+};
+
 export const calculateLevel = (totalXP: number): { level: number; currentXP: number; xpForNextLevel: number } => {
   const level = Math.floor(totalXP / XP_PER_LEVEL) + 1;
   const currentXP = totalXP % XP_PER_LEVEL;

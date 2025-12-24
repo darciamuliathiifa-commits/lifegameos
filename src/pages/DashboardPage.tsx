@@ -56,6 +56,7 @@ const DashboardPage = () => {
             quests={store.quests}
             onComplete={store.completeQuest}
             onAdd={store.addQuest}
+            onEdit={store.updateQuest}
             onDelete={store.deleteQuest}
             onImageUpload={store.updateQuestImage}
           />
