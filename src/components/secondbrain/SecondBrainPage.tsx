@@ -111,39 +111,41 @@ export const SecondBrainPage = () => {
   };
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-display text-foreground flex items-center gap-3">
-          <Brain className="w-8 h-8 text-primary" />
+    <div className="space-y-4 md:space-y-6 animate-slide-up">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <h1 className="text-xl md:text-3xl font-display text-foreground flex items-center gap-2 md:gap-3">
+          <Brain className="w-6 h-6 md:w-8 md:h-8 text-primary" />
           Second Brain
         </h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="gaming" className="gap-2">
+            <Button variant="gaming" size="sm" className="gap-2 w-full sm:w-auto">
               <Plus className="w-4 h-4" /> Add Item
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add to Second Brain</DialogTitle>
+              <DialogTitle className="text-base md:text-lg">Add to Second Brain</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="space-y-3 md:space-y-4 pt-3 md:pt-4">
               <Input
                 placeholder="Title"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className="text-sm"
               />
               <Textarea
                 placeholder="Content / Notes"
                 value={form.content}
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
-                rows={4}
+                rows={3}
+                className="text-sm"
               />
               <Select 
                 value={form.type} 
                 onValueChange={(v) => setForm({ ...form, type: v as 'project' | 'area' | 'resource' | 'archive' })}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="project">Project</SelectItem>
                   <SelectItem value="area">Area</SelectItem>
@@ -152,7 +154,7 @@ export const SecondBrainPage = () => {
                 </SelectContent>
               </Select>
               <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {statusOptions.map(s => (
                     <SelectItem key={s} value={s}>
@@ -162,8 +164,8 @@ export const SecondBrainPage = () => {
                 </SelectContent>
               </Select>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button variant="gaming" onClick={handleSubmit}>Add</Button>
+                <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(false)} className="flex-1">Cancel</Button>
+                <Button variant="gaming" size="sm" onClick={handleSubmit} className="flex-1">Add</Button>
               </div>
             </div>
           </DialogContent>
@@ -171,66 +173,67 @@ export const SecondBrainPage = () => {
       </div>
 
       {/* PARA Explanation */}
-      <div className="card-gaming rounded-xl p-4">
-        <p className="text-sm text-muted-foreground font-body">
-          <span className="text-primary font-display">PARA Method:</span>{' '}
-          <span className="text-foreground">Projects</span> (actionable with deadlines) → {' '}
-          <span className="text-foreground">Areas</span> (ongoing responsibilities) → {' '}
-          <span className="text-foreground">Resources</span> (topics of interest) → {' '}
-          <span className="text-foreground">Archives</span> (inactive items)
+      <div className="card-gaming rounded-lg md:rounded-xl p-3 md:p-4">
+        <p className="text-xs md:text-sm text-muted-foreground font-body">
+          <span className="text-primary font-display">PARA:</span>{' '}
+          <span className="text-foreground">Projects</span> → {' '}
+          <span className="text-foreground">Areas</span> → {' '}
+          <span className="text-foreground">Resources</span> → {' '}
+          <span className="text-foreground">Archives</span>
         </p>
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-        <TabsList className="grid grid-cols-4 w-full max-w-md">
+        <TabsList className="grid grid-cols-4 w-full">
           {(['project', 'area', 'resource', 'archive'] as const).map((type) => {
             const config = typeConfig[type];
             const count = items.filter(i => i.type === type).length;
             return (
-              <TabsTrigger key={type} value={type} className="gap-2">
-                <config.icon className={cn("w-4 h-4", config.color)} />
+              <TabsTrigger key={type} value={type} className="gap-1 text-xs md:text-sm px-2 md:px-3">
+                <config.icon className={cn("w-3 h-3 md:w-4 md:h-4", config.color)} />
                 <span className="hidden sm:inline">{config.label}</span>
-                <span className="text-xs text-muted-foreground">({count})</span>
+                <span className="sm:hidden">{count}</span>
+                <span className="text-[10px] text-muted-foreground hidden sm:inline">({count})</span>
               </TabsTrigger>
             );
           })}
         </TabsList>
 
         {(['project', 'area', 'resource', 'archive'] as const).map((type) => (
-          <TabsContent key={type} value={type} className="mt-6">
-            <div className="space-y-3">
+          <TabsContent key={type} value={type} className="mt-4 md:mt-6">
+            <div className="space-y-2 md:space-y-3">
               {filteredItems.map((item) => (
-                <div key={item.id} className="card-gaming rounded-xl p-4 group">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-display text-foreground">{item.title}</h3>
-                        <span className={cn("text-xs capitalize font-body", getStatusColor(item.status))}>
+                <div key={item.id} className="card-gaming rounded-lg md:rounded-xl p-3 md:p-4 group">
+                  <div className="flex items-start justify-between gap-3 md:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-display text-sm md:text-base text-foreground">{item.title}</h3>
+                        <span className={cn("text-[10px] md:text-xs capitalize font-body", getStatusColor(item.status))}>
                           {item.status.replace('_', ' ')}
                         </span>
                       </div>
                       {item.content && (
-                        <p className="text-sm text-muted-foreground font-body mt-1 line-clamp-2">
+                        <p className="text-xs md:text-sm text-muted-foreground font-body mt-1 line-clamp-2">
                           {item.content}
                         </p>
                       )}
-                      <p className="text-xs text-muted-foreground/70 font-body mt-2">
+                      <p className="text-[10px] md:text-xs text-muted-foreground/70 font-body mt-1.5 md:mt-2">
                         {new Date(item.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                       {type !== 'archive' && (
                         <button 
                           onClick={() => moveToArchive(item)} 
-                          className="p-1 hover:text-muted-foreground"
+                          className="p-1.5 hover:text-muted-foreground"
                           title="Move to Archive"
                         >
-                          <FolderArchive className="w-4 h-4" />
+                          <FolderArchive className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         </button>
                       )}
-                      <button onClick={() => deleteItem(item.id)} className="p-1 hover:text-destructive">
-                        <Trash2 className="w-4 h-4" />
+                      <button onClick={() => deleteItem(item.id)} className="p-1.5 hover:text-destructive">
+                        <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </button>
                     </div>
                   </div>
@@ -238,7 +241,7 @@ export const SecondBrainPage = () => {
               ))}
 
               {filteredItems.length === 0 && !loading && (
-                <div className="text-center py-12 text-muted-foreground font-body">
+                <div className="text-center py-8 md:py-12 text-muted-foreground font-body text-sm">
                   No {type}s yet. Add your first one!
                 </div>
               )}

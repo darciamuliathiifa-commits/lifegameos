@@ -120,54 +120,59 @@ export const PrayersPage = () => {
   );
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 className="text-3xl font-display text-foreground flex items-center gap-3">
-          <Moon className="w-8 h-8 text-primary" />
-          Kumpulan Doa Harian
+    <div className="space-y-4 md:space-y-6 animate-slide-up">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 md:gap-4">
+        <h1 className="text-xl md:text-3xl font-display text-foreground flex items-center gap-2 md:gap-3">
+          <Moon className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+          Kumpulan Doa
         </h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           {prayers.length === 0 && (
-            <Button variant="outline" onClick={addDefaultPrayers}>
-              Add Default Prayers
+            <Button variant="outline" size="sm" onClick={addDefaultPrayers} className="flex-1 sm:flex-none text-xs">
+              Add Default
             </Button>
           )}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="gaming" className="gap-2">
-                <Plus className="w-4 h-4" /> Add Prayer
+              <Button variant="gaming" size="sm" className="gap-2 flex-1 sm:flex-none">
+                <Plus className="w-4 h-4" /> Add
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-[95vw] sm:max-w-lg">
               <DialogHeader>
-                <DialogTitle>Add New Prayer</DialogTitle>
+                <DialogTitle className="text-base md:text-lg">Add New Prayer</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 pt-4">
+              <div className="space-y-3 md:space-y-4 pt-3 md:pt-4">
                 <Input
                   placeholder="Prayer title"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  className="text-sm"
                 />
                 <Textarea
                   placeholder="Arabic text"
                   value={form.arabic_text}
                   onChange={(e) => setForm({ ...form, arabic_text: e.target.value })}
-                  className="text-right text-xl font-arabic"
+                  className="text-right text-lg md:text-xl font-arabic"
                   dir="rtl"
+                  rows={2}
                 />
                 <Input
                   placeholder="Transliteration"
                   value={form.transliteration}
                   onChange={(e) => setForm({ ...form, transliteration: e.target.value })}
+                  className="text-sm"
                 />
                 <Textarea
                   placeholder="Translation"
                   value={form.translation}
                   onChange={(e) => setForm({ ...form, translation: e.target.value })}
+                  className="text-sm"
+                  rows={2}
                 />
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                  <Button variant="gaming" onClick={handleSubmit}>Add</Button>
+                  <Button variant="outline" size="sm" onClick={() => setIsDialogOpen(false)} className="flex-1">Cancel</Button>
+                  <Button variant="gaming" size="sm" onClick={handleSubmit} className="flex-1">Add</Button>
                 </div>
               </div>
             </DialogContent>
@@ -176,46 +181,46 @@ export const PrayersPage = () => {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
+      <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder="Search prayers..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          className="pl-10 text-sm"
         />
       </div>
 
       {/* Prayers List */}
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         {filteredPrayers.map((prayer) => (
-          <div key={prayer.id} className="card-gaming rounded-xl p-5 space-y-4 group">
+          <div key={prayer.id} className="card-gaming rounded-lg md:rounded-xl p-3 md:p-5 space-y-2 md:space-y-4 group">
             <div className="flex items-start justify-between">
-              <h3 className="font-display text-lg text-foreground">{prayer.title}</h3>
-              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => toggleFavorite(prayer)} className="p-1 hover:text-accent">
-                  <Star className={cn("w-5 h-5", prayer.is_favorite && "fill-accent text-accent")} />
+              <h3 className="font-display text-sm md:text-lg text-foreground">{prayer.title}</h3>
+              <div className="flex gap-1.5 md:gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                <button onClick={() => toggleFavorite(prayer)} className="p-1 md:p-1.5 hover:text-accent">
+                  <Star className={cn("w-4 h-4 md:w-5 md:h-5", prayer.is_favorite && "fill-accent text-accent")} />
                 </button>
-                <button onClick={() => deletePrayer(prayer.id)} className="p-1 hover:text-destructive">
-                  <Trash2 className="w-5 h-5" />
+                <button onClick={() => deletePrayer(prayer.id)} className="p-1 md:p-1.5 hover:text-destructive">
+                  <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                 </button>
               </div>
             </div>
             
             {prayer.arabic_text && (
-              <p className="text-2xl text-foreground text-right leading-loose" dir="rtl">
+              <p className="text-lg md:text-2xl text-foreground text-right leading-loose" dir="rtl">
                 {prayer.arabic_text}
               </p>
             )}
             
             {prayer.transliteration && (
-              <p className="text-sm text-primary font-body italic">
+              <p className="text-xs md:text-sm text-primary font-body italic">
                 {prayer.transliteration}
               </p>
             )}
             
             {prayer.translation && (
-              <p className="text-muted-foreground font-body">
+              <p className="text-xs md:text-sm text-muted-foreground font-body">
                 {prayer.translation}
               </p>
             )}
@@ -224,7 +229,7 @@ export const PrayersPage = () => {
       </div>
 
       {filteredPrayers.length === 0 && !loading && (
-        <div className="text-center py-12 text-muted-foreground font-body">
+        <div className="text-center py-8 md:py-12 text-muted-foreground font-body text-sm">
           No prayers yet. Add your first prayer or load default prayers!
         </div>
       )}
