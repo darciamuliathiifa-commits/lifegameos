@@ -1,3 +1,17 @@
+export type Difficulty = 'easy' | 'medium' | 'hard';
+
+export const DIFFICULTY_XP: Record<Difficulty, number> = {
+  easy: 25,
+  medium: 50,
+  hard: 100,
+};
+
+export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  easy: 'Mudah',
+  medium: 'Sedang',
+  hard: 'Sulit',
+};
+
 export interface Quest {
   id: string;
   title: string;
@@ -7,7 +21,16 @@ export interface Quest {
   completed: boolean;
   dueDate?: string;
   image?: string;
+  difficulty?: Difficulty;
 }
+
+export type RepeatFrequency = 'daily' | 'weekly' | 'monthly';
+
+export const REPEAT_LABELS: Record<RepeatFrequency, string> = {
+  daily: 'Setiap Hari',
+  weekly: 'Setiap Minggu',
+  monthly: 'Setiap Bulan',
+};
 
 export interface Habit {
   id: string;
@@ -17,6 +40,7 @@ export interface Habit {
   completedToday: boolean;
   category: 'health' | 'productivity' | 'social' | 'learning' | 'creative';
   image?: string;
+  repeatFrequency?: RepeatFrequency;
 }
 
 export interface Goal {
