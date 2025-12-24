@@ -50,6 +50,42 @@ export type Database = {
         }
         Relationships: []
       }
+      finance_transactions: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           category: string
@@ -137,6 +173,123 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          name: string
+          purchase_date: string | null
+          purchase_price: number | null
+          quantity: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          name: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          quantity?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          name?: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          quantity?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string
+          id: string
+          is_pinned: boolean | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      prayers: {
+        Row: {
+          arabic_text: string | null
+          category: string | null
+          created_at: string
+          id: string
+          is_favorite: boolean | null
+          title: string
+          translation: string | null
+          transliteration: string | null
+          user_id: string
+        }
+        Insert: {
+          arabic_text?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_favorite?: boolean | null
+          title: string
+          translation?: string | null
+          transliteration?: string | null
+          user_id: string
+        }
+        Update: {
+          arabic_text?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_favorite?: boolean | null
+          title?: string
+          translation?: string | null
+          transliteration?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -214,6 +367,50 @@ export type Database = {
           xp_reward?: number
         }
         Relationships: []
+      }
+      second_brain_items: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          parent_id: string | null
+          status: string | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          status?: string | null
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          status?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "second_brain_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "second_brain_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_stats: {
         Row: {
