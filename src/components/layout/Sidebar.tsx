@@ -19,19 +19,19 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-20 lg:w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
       {/* Logo */}
-      <div className="h-20 flex items-center justify-center lg:justify-start lg:px-6 border-b border-sidebar-border">
+      <div className="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_20px_hsl(var(--primary)/0.5)]">
-            <Zap className="w-6 h-6 text-primary-foreground" />
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_20px_hsl(var(--primary)/0.5)]">
+            <Zap className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="hidden lg:block font-display text-lg text-foreground">
+          <span className="hidden lg:block font-display text-base text-foreground tracking-wide">
             LIFE<span className="text-primary">GAME</span>
           </span>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-6 px-3 lg:px-4 space-y-2">
+      <nav className="flex-1 py-4 px-2 lg:px-3 space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -41,21 +41,21 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
               key={item.id}
               onClick={() => onTabChange(item.id)}
               className={cn(
-                "w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 group",
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
                 isActive
-                  ? "bg-primary/20 text-primary shadow-[0_0_15px_hsl(var(--primary)/0.3)]"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
             >
               <Icon className={cn(
-                "w-5 h-5 transition-all duration-300",
-                isActive && "drop-shadow-[0_0_8px_hsl(var(--primary))]"
+                "w-5 h-5 transition-all duration-200 shrink-0",
+                isActive && "drop-shadow-[0_0_6px_hsl(var(--primary))]"
               )} />
-              <span className="hidden lg:block font-body text-sm font-semibold uppercase tracking-wider">
+              <span className="hidden lg:block font-body text-sm font-medium uppercase tracking-wider">
                 {item.label}
               </span>
               {isActive && (
-                <div className="hidden lg:block ml-auto w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary))]" />
+                <div className="hidden lg:block ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
               )}
             </button>
           );
@@ -63,10 +63,10 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       </nav>
 
       {/* Settings */}
-      <div className="p-3 lg:p-4 border-t border-sidebar-border">
-        <button className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-300">
-          <Settings className="w-5 h-5" />
-          <span className="hidden lg:block font-body text-sm font-semibold uppercase tracking-wider">
+      <div className="p-2 lg:p-3 border-t border-sidebar-border">
+        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all duration-200">
+          <Settings className="w-5 h-5 shrink-0" />
+          <span className="hidden lg:block font-body text-sm font-medium uppercase tracking-wider">
             Settings
           </span>
         </button>
