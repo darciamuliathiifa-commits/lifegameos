@@ -365,7 +365,6 @@ export const TemantiketSpacePage = () => {
           setIsDetailOpen(open);
           if (!open) setSelectedNote(null);
         }}
-        onEdit={() => {}}
         onDelete={async (id) => {
           await supabase.from('notes').delete().eq('id', id);
           fetchNotes();
@@ -375,6 +374,7 @@ export const TemantiketSpacePage = () => {
           await supabase.from('notes').update({ is_pinned: !note.is_pinned }).eq('id', note.id);
           fetchNotes();
         }}
+        onNoteUpdated={fetchNotes}
       />
     </div>
   );

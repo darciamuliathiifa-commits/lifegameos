@@ -6,13 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
+import { PrayerTimesWidget } from '@/components/prayers/PrayerTimesWidget';
+import { NoteDetailSheet } from '@/components/notes/NoteDetailSheet';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isSameDay, isToday, addDays, startOfDay } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 import { 
   IconCalendar, IconHabits, IconJournal, IconMeal, IconTravel, IconWorkout,
   IconBook, IconMovie, IconWallet, IconTarget, IconVision, IconHeart,
-  IconPlanner, IconCheck
+  IconPlanner, IconCheck, IconMoon
 } from '@/components/icons/CleanIcons';
 
 // Images for category cards
@@ -44,9 +47,32 @@ interface Note {
   id: string;
   title: string;
   content: string | null;
-  category: string | null;
+  category: string;
+  is_pinned: boolean;
   created_at: string;
 }
+
+interface QuickMenuItem {
+  name: string;
+  Icon: React.ComponentType<{ className?: string; size?: number }>;
+  category: string;
+  defaultContent: string;
+}
+
+const quickMenuItems: QuickMenuItem[] = [
+  { name: 'Planner', Icon: IconPlanner, category: 'planner', defaultContent: '## Planner\n\n### Today\'s Tasks\n- [ ] Task 1\n- [ ] Task 2\n- [ ] Task 3\n\n### Schedule\n- 08:00 - Morning routine\n- 09:00 - Work\n- 12:00 - Lunch\n- 13:00 - Work\n- 18:00 - Evening' },
+  { name: 'Habits', Icon: IconHabits, category: 'habits', defaultContent: '## Habits Tracker\n\n### Daily Habits\n- [ ] Exercise\n- [ ] Read\n- [ ] Meditate\n- [ ] Drink water\n\n### Weekly Review\n- ' },
+  { name: 'Journal', Icon: IconJournal, category: 'journal', defaultContent: '## Journal Entry\n\n### Date: ' + new Date().toLocaleDateString() + '\n\n### Thoughts\n- \n\n### Gratitude\n- \n\n### Reflections\n- ' },
+  { name: 'Meal Planner', Icon: IconMeal, category: 'meal', defaultContent: '## Meal Planner\n\n### Breakfast\n- \n\n### Lunch\n- \n\n### Dinner\n- \n\n### Snacks\n- ' },
+  { name: 'Travel Planner', Icon: IconTravel, category: 'travel', defaultContent: '## Travel Planner\n\n### Destination\n- \n\n### Dates\n- \n\n### Packing List\n- [ ] Passport\n- [ ] Tickets\n- [ ] Clothes\n\n### Itinerary\n- ' },
+  { name: 'Workout Planner', Icon: IconWorkout, category: 'workout', defaultContent: '## Workout Planner\n\n### Today\'s Workout\n- [ ] Warm up\n- [ ] Cardio\n- [ ] Strength\n- [ ] Cool down\n\n### Weekly Schedule\n- Monday: \n- Tuesday: \n- Wednesday: \n- Thursday: \n- Friday: ' },
+  { name: 'Bookshelf', Icon: IconBook, category: 'bookshelf', defaultContent: '## My Bookshelf\n\n### Currently Reading\n- \n\n### Want to Read\n- \n\n### Finished\n- ' },
+  { name: 'Movies & Series', Icon: IconMovie, category: 'movies', defaultContent: '## Movies & Series\n\n### Watching\n- \n\n### Want to Watch\n- \n\n### Watched\n- ' },
+  { name: 'Finance', Icon: IconWallet, category: 'finance', defaultContent: '## Finance Tracker\n\n### Income\n- \n\n### Expenses\n- \n\n### Savings Goals\n- \n\n### Notes\n- ' },
+  { name: 'Goals', Icon: IconTarget, category: 'goals', defaultContent: '## Goals\n\n### Short Term Goals\n- [ ] \n\n### Long Term Goals\n- [ ] \n\n### Progress Notes\n- ' },
+  { name: 'Vision', Icon: IconVision, category: 'vision', defaultContent: '## Vision Board\n\n### My Vision\n- \n\n### Dreams & Aspirations\n- \n\n### Inspiration\n- ' },
+  { name: 'Health', Icon: IconHeart, category: 'health', defaultContent: '## Health Tracker\n\n### Daily Health Log\n- Sleep: hours\n- Water: glasses\n- Exercise: \n- Mood: \n\n### Notes\n- ' },
+];
 
 const categoryCards = [
   { 
@@ -133,6 +159,9 @@ export const LifePlannerDashboard = ({
   const [financeData, setFinanceData] = useState<{ income: number; expenses: number }>({ income: 0, expenses: 0 });
   const [notes, setNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [isNoteSheetOpen, setIsNoteSheetOpen] = useState(false);
+  const [isCreatingNote, setIsCreatingNote] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -173,6 +202,44 @@ export const LifePlannerDashboard = ({
     if (notesData) setNotes(notesData);
     
     setIsLoading(false);
+  };
+
+  const createNoteFromMenu = async (menuItem: QuickMenuItem) => {
+    if (!user) {
+      toast.error('Please login first');
+      return;
+    }
+
+    setIsCreatingNote(menuItem.name);
+
+    const { data, error } = await supabase
+      .from('notes')
+      .insert({
+        user_id: user.id,
+        title: `${menuItem.name} - ${new Date().toLocaleDateString()}`,
+        content: menuItem.defaultContent,
+        category: menuItem.category,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      toast.error('Failed to create note');
+    } else if (data) {
+      toast.success(`${menuItem.name} note created!`);
+      setSelectedNote(data);
+      setIsNoteSheetOpen(true);
+      fetchDashboardData();
+    }
+    
+    setIsCreatingNote(null);
+  };
+
+  const handleQuickMenuClick = (itemName: string) => {
+    const menuItem = quickMenuItems.find(item => item.name === itemName);
+    if (menuItem) {
+      createNoteFromMenu(menuItem);
+    }
   };
 
   // Calendar logic
@@ -231,7 +298,7 @@ export const LifePlannerDashboard = ({
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute bottom-4 left-6">
           <div className="w-8 h-8 rounded-full bg-primary/80 flex items-center justify-center mb-2">
-            <span className="text-sm">🌙</span>
+            <IconMoon className="w-4 h-4 text-foreground" size={16} />
           </div>
         </div>
       </div>
@@ -276,11 +343,14 @@ export const LifePlannerDashboard = ({
               {card.items.map((item) => (
                 <button
                   key={item.name}
-                  onClick={() => onNavigate(card.tab)}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full text-left py-0.5"
+                  onClick={() => handleQuickMenuClick(item.name)}
+                  disabled={isCreatingNote === item.name}
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full text-left py-0.5 disabled:opacity-50"
                 >
                   <item.Icon className="w-3.5 h-3.5 text-primary" size={14} />
-                  <span className="font-body">{item.name}</span>
+                  <span className="font-body">
+                    {isCreatingNote === item.name ? 'Creating...' : item.name}
+                  </span>
                 </button>
               ))}
             </div>
@@ -338,10 +408,14 @@ export const LifePlannerDashboard = ({
                         </span>
                       </th>
                       <th className="p-3 hidden lg:table-cell">
-                        <span className="flex items-center gap-1">📅 Due Date</span>
+                        <span className="flex items-center gap-1">
+                          <IconCalendar className="w-3 h-3" size={12} /> Due Date
+                        </span>
                       </th>
                       <th className="p-3 w-16">
-                        <span className="flex items-center gap-1">⚠️ XP</span>
+                        <span className="flex items-center gap-1">
+                          <IconTarget className="w-3 h-3" size={12} /> XP
+                        </span>
                       </th>
                     </tr>
                   </thead>
@@ -464,7 +538,7 @@ export const LifePlannerDashboard = ({
                 <span className="font-display text-lg text-foreground">{monthName}</span>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="text-xs gap-1.5">
-                    📅 Open in Calendar
+                    <IconCalendar className="w-3 h-3" size={12} /> Open in Calendar
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -561,7 +635,7 @@ export const LifePlannerDashboard = ({
               <h3 className="font-display text-lg text-foreground">Upcoming</h3>
             </div>
             <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-              ≡ All <ChevronDown className="w-3 h-3" />
+              <IconCheck className="w-3 h-3" size={12} /> All <ChevronDown className="w-3 h-3" />
             </button>
           </div>
 
@@ -681,7 +755,7 @@ export const LifePlannerDashboard = ({
                 <h3 className="font-display text-sm text-foreground">Habit Tracker</h3>
               </div>
               <button className="flex items-center gap-1 text-xs text-muted-foreground">
-                📅 Today <ChevronDown className="w-3 h-3" />
+                <IconCalendar className="w-3 h-3" size={12} /> Today <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             
@@ -702,7 +776,7 @@ export const LifePlannerDashboard = ({
                       checked={habit.completedToday}
                       onCheckedChange={() => onCompleteHabit(habit.id)}
                     />
-                    <span className="text-xs">{habit.icon}</span>
+                    <IconHabits className="w-3 h-3 text-muted-foreground" size={12} />
                     <span className={cn(
                       "text-muted-foreground",
                       habit.completedToday && "line-through"
@@ -734,7 +808,7 @@ export const LifePlannerDashboard = ({
                 <h3 className="font-display text-sm text-foreground">Goals</h3>
               </div>
               <button className="flex items-center gap-1 text-xs text-muted-foreground">
-                🎯 Active <ChevronDown className="w-3 h-3" />
+                <IconTarget className="w-3 h-3" size={12} /> Active <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             
@@ -779,7 +853,7 @@ export const LifePlannerDashboard = ({
                 <h3 className="font-display text-sm text-foreground">Recent Notes</h3>
               </div>
               <button className="flex items-center gap-1 text-xs text-muted-foreground">
-                📝 All <ChevronDown className="w-3 h-3" />
+                <IconJournal className="w-3 h-3" size={12} /> All <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             
@@ -790,7 +864,7 @@ export const LifePlannerDashboard = ({
                   onClick={() => onNavigate('notes')}
                   className="flex items-center gap-2 text-sm w-full text-left hover:bg-muted/30 rounded p-1 -m-1 transition-colors"
                 >
-                  <span className="text-muted-foreground">≡</span>
+                  <span className="text-muted-foreground">-</span>
                   <span className="text-foreground truncate flex-1">{note.title}</span>
                 </button>
               ))}
@@ -818,13 +892,15 @@ export const LifePlannerDashboard = ({
                 <h3 className="font-display text-sm text-foreground">Finance</h3>
               </div>
               <button className="flex items-center gap-1 text-xs text-muted-foreground">
-                📅 This month <ChevronDown className="w-3 h-3" />
+                <IconCalendar className="w-3 h-3" size={12} /> This month <ChevronDown className="w-3 h-3" />
               </button>
             </div>
             
             <div className="space-y-3">
               <div className="p-3 rounded-lg bg-muted/30">
-                <p className="text-xs text-muted-foreground">📅 {format(new Date(), 'yyyy MMMM')}</p>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <IconCalendar className="w-3 h-3" size={12} /> {format(new Date(), 'yyyy MMMM')}
+                </p>
               </div>
               
               <div className="space-y-2 text-sm">
@@ -859,6 +935,32 @@ export const LifePlannerDashboard = ({
           </CardContent>
         </Card>
       </div>
+
+      {/* Prayer Times Widget */}
+      <div className="px-2 animate-slide-up" style={{ animationDelay: '600ms' }}>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-muted-foreground">—</span>
+          <h2 className="font-display text-lg text-foreground">Prayer Times</h2>
+        </div>
+        <PrayerTimesWidget />
+      </div>
+
+      {/* Note Detail Sheet */}
+      <NoteDetailSheet
+        note={selectedNote}
+        open={isNoteSheetOpen}
+        onOpenChange={setIsNoteSheetOpen}
+        onDelete={async (id) => {
+          await supabase.from('notes').delete().eq('id', id);
+          fetchDashboardData();
+          setIsNoteSheetOpen(false);
+        }}
+        onTogglePin={async (note) => {
+          await supabase.from('notes').update({ is_pinned: !note.is_pinned }).eq('id', note.id);
+          fetchDashboardData();
+        }}
+        onNoteUpdated={fetchDashboardData}
+      />
     </div>
   );
 };
