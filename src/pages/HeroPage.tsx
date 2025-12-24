@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import heroBanner from '@/assets/hero-banner.jpg';
 import { Helmet } from 'react-helmet-async';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
 
 const features = [
   {
@@ -29,6 +31,21 @@ const features = [
 
 const HeroPage = () => {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/dashboard');
+    }
+  }, [user, loading, navigate]);
+
+  const handleGetStarted = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/auth');
+    }
+  };
 
   return (
     <>
@@ -79,10 +96,10 @@ const HeroPage = () => {
                 <Button
                   variant="gaming"
                   size="xl"
-                  onClick={() => navigate('/dashboard')}
+                  onClick={handleGetStarted}
                   className="gap-3"
                 >
-                  Enter Your OS
+                  {user ? 'Enter Your OS' : 'Get Started'}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
                 <Button
@@ -138,7 +155,7 @@ const HeroPage = () => {
               <Button
                 variant="gaming"
                 size="xl"
-                onClick={() => navigate('/dashboard')}
+                onClick={handleGetStarted}
                 className="gap-3"
               >
                 Start Your Journey

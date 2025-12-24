@@ -7,12 +7,24 @@ import { HabitsPage } from '@/components/habits/HabitsPage';
 import { GoalsPage } from '@/components/goals/GoalsPage';
 import { AchievementsPage } from '@/components/achievements/AchievementsPage';
 import { ProfilePage } from '@/components/profile/ProfilePage';
-import { useGameStore } from '@/hooks/useGameStore';
+import { useSupabaseGameStore } from '@/hooks/useSupabaseGameStore';
 import { Helmet } from 'react-helmet-async';
+import { Loader2 } from 'lucide-react';
 
 const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const store = useGameStore();
+  const store = useSupabaseGameStore();
+
+  if (store.loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 animate-spin text-primary" />
+          <p className="text-muted-foreground font-body">Loading your data...</p>
+        </div>
+      </div>
+    );
+  }
 
   const renderContent = () => {
     switch (activeTab) {
