@@ -25,12 +25,13 @@ const categoryLabels: Record<Category, string> = {
   creative: 'Kreativitas',
 };
 
-const difficulties: Difficulty[] = ['easy', 'medium', 'hard'];
+const difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'special'];
 
 const difficultyColors: Record<Difficulty, string> = {
   easy: 'bg-green-500/20 text-green-400 border-green-500/30',
   medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
   hard: 'bg-red-500/20 text-red-400 border-red-500/30',
+  special: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
 };
 
 export const AddQuestDialog = ({ open, onOpenChange, onAdd }: AddQuestDialogProps) => {
