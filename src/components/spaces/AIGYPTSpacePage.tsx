@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus, Pyramid, BookOpen, Video, Users, Lightbulb, Calendar, FileText, Sparkles, Target, Eye, Heart, Utensils, Plane, Dumbbell, BookMarked, Film, Wallet } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Pyramid, BookOpen, Video, Users, Lightbulb, Calendar, FileText, Sparkles, Target, Eye, Heart, Utensils, Plane, Dumbbell, BookMarked, Film, Wallet, Loader2, Trash2, Pin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -7,80 +7,17 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { NoteDetailSheet } from '@/components/notes/NoteDetailSheet';
 
-interface SpaceCard {
+interface Note {
   id: string;
   title: string;
-  subtitle: string;
-  description: string;
-  icon: string;
-  status?: string;
-  statusColor?: string;
-  bgGradient: string;
+  content: string | null;
+  category: string | null;
+  is_pinned: boolean | null;
+  created_at: string;
+  updated_at: string;
 }
-
-const menuCards: SpaceCard[] = [
-  {
-    id: '1',
-    title: 'AI Learning Hub',
-    subtitle: 'Belajar AI dari dasar!',
-    description: 'Kursus & Tutorial AI',
-    icon: '🤖',
-    status: 'POPULER!',
-    statusColor: 'treasure',
-    bgGradient: 'from-amber-500 to-orange-600',
-  },
-  {
-    id: '2',
-    title: 'Prompt Engineering',
-    subtitle: 'Kuasai seni prompting!',
-    description: 'Panduan Prompt Engineering',
-    icon: '✨',
-    status: 'NEW!',
-    statusColor: 'ocean',
-    bgGradient: 'from-purple-600 to-indigo-700',
-  },
-  {
-    id: '3',
-    title: 'AI Tools Database',
-    subtitle: '1000+ AI Tools!',
-    description: 'Database AI Tools Terlengkap',
-    icon: '🛠️',
-    status: 'UPDATE!',
-    statusColor: 'jungle',
-    bgGradient: 'from-emerald-600 to-teal-700',
-  },
-  {
-    id: '4',
-    title: 'Community Hub',
-    subtitle: 'Diskusi & Networking',
-    description: 'AIGYPT Community',
-    icon: '👥',
-    status: 'ACTIVE!',
-    statusColor: 'sunset',
-    bgGradient: 'from-rose-600 to-pink-700',
-  },
-  {
-    id: '5',
-    title: 'AI News & Trends',
-    subtitle: 'Update terbaru AI!',
-    description: 'Berita & Tren AI Terkini',
-    icon: '📰',
-    status: 'DAILY!',
-    statusColor: 'sky',
-    bgGradient: 'from-cyan-600 to-blue-700',
-  },
-  {
-    id: '6',
-    title: 'Project Showcase',
-    subtitle: 'Karya member AIGYPT',
-    description: 'Galeri Project AI',
-    icon: '🎨',
-    status: 'INSPIRE!',
-    statusColor: 'treasure',
-    bgGradient: 'from-violet-600 to-purple-700',
-  },
-];
 
 interface QuickMenuItem {
   name: string;
@@ -112,10 +49,50 @@ const quickLinks = [
   { name: 'Events Calendar', icon: Calendar },
 ];
 
+const getCategoryColor = (category: string | null) => {
+  const colors: Record<string, string> = {
+    planner: 'from-blue-500 to-blue-600',
+    meal: 'from-orange-500 to-orange-600',
+    bookshelf: 'from-purple-500 to-purple-600',
+    goals: 'from-emerald-500 to-emerald-600',
+    habits: 'from-pink-500 to-pink-600',
+    travel: 'from-cyan-500 to-cyan-600',
+    movies: 'from-red-500 to-red-600',
+    vision: 'from-indigo-500 to-indigo-600',
+    journal: 'from-amber-500 to-amber-600',
+    workout: 'from-rose-500 to-rose-600',
+    finance: 'from-green-500 to-green-600',
+    health: 'from-teal-500 to-teal-600',
+    aigypt: 'from-amber-500 to-orange-600',
+  };
+  return colors[category || 'aigypt'] || 'from-amber-500 to-orange-600';
+};
+
 export const AIGYPTSpacePage = () => {
   const { user } = useAuth();
-  const [cards] = useState<SpaceCard[]>(menuCards);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState<string | null>(null);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchNotes();
+    }
+  }, [user]);
+
+  const fetchNotes = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('notes')
+      .select('*')
+      .order('is_pinned', { ascending: false })
+      .order('updated_at', { ascending: false });
+
+    if (data) setNotes(data);
+    setIsLoading(false);
+  };
 
   const createNoteFromMenu = async (menuItem: QuickMenuItem) => {
     if (!user) {
@@ -125,22 +102,98 @@ export const AIGYPTSpacePage = () => {
 
     setIsCreating(menuItem.name);
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('notes')
       .insert({
         user_id: user.id,
-        title: menuItem.name,
+        title: `${menuItem.name} - AIGYPT`,
         content: menuItem.defaultContent,
         category: menuItem.category,
-      });
+      })
+      .select()
+      .single();
 
     if (error) {
       toast.error('Failed to create note');
     } else {
       toast.success(`${menuItem.name} note created!`);
+      fetchNotes();
+      if (data) {
+        setSelectedNote(data);
+        setIsDetailOpen(true);
+      }
     }
     
     setIsCreating(null);
+  };
+
+  const createNewNote = async () => {
+    if (!user) {
+      toast.error('Please login first');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('notes')
+      .insert({
+        user_id: user.id,
+        title: 'New AIGYPT Note',
+        content: '## New Note\n\nStart writing here...',
+        category: 'aigypt',
+      })
+      .select()
+      .single();
+
+    if (error) {
+      toast.error('Failed to create note');
+    } else {
+      toast.success('Note created!');
+      fetchNotes();
+      if (data) {
+        setSelectedNote(data);
+        setIsDetailOpen(true);
+      }
+    }
+  };
+
+  const handleNoteClick = (note: Note) => {
+    setSelectedNote(note);
+    setIsDetailOpen(true);
+  };
+
+  const handleNoteUpdate = () => {
+    fetchNotes();
+  };
+
+  const handleDeleteNote = async (noteId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const { error } = await supabase
+      .from('notes')
+      .delete()
+      .eq('id', noteId);
+
+    if (error) {
+      toast.error('Failed to delete note');
+    } else {
+      toast.success('Note deleted');
+      fetchNotes();
+    }
+  };
+
+  const togglePin = async (noteId: string, isPinned: boolean, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    const { error } = await supabase
+      .from('notes')
+      .update({ is_pinned: !isPinned })
+      .eq('id', noteId);
+
+    if (error) {
+      toast.error('Failed to update note');
+    } else {
+      fetchNotes();
+    }
   };
 
   return (
@@ -169,7 +222,7 @@ export const AIGYPTSpacePage = () => {
         </div>
       </div>
 
-      {/* Quick Menu Grid - NEW */}
+      {/* Quick Menu Grid */}
       <Card className="bg-secondary/5 border-secondary/20">
         <CardContent className="py-6">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -223,62 +276,111 @@ export const AIGYPTSpacePage = () => {
           </Card>
         </div>
 
-        {/* Menu Cards Grid */}
+        {/* Notes Cards Grid */}
         <div className="lg:col-span-3 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-display text-foreground">Menu AIGYPT</h2>
-            <Button variant="adventure" size="sm" className="gap-2">
-              <Plus className="w-4 h-4" /> New
+            <h2 className="text-xl font-display text-foreground">AIGYPT Notes</h2>
+            <Button variant="adventure" size="sm" className="gap-2" onClick={createNewNote}>
+              <Plus className="w-4 h-4" /> New Note
             </Button>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {cards.map((card) => (
-              <Card 
-                key={card.id} 
-                className="overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform group"
-              >
-                {/* Colored Header */}
-                <div className={cn(
-                  "p-4 bg-gradient-to-br text-white",
-                  card.bgGradient
-                )}>
-                  <div className="flex items-center gap-2 mb-2 opacity-80">
-                    <Pyramid className="w-4 h-4" />
-                    <span className="text-xs font-body">aigypt</span>
-                  </div>
-                  <h3 className="font-display font-bold text-lg leading-tight">{card.title}</h3>
-                  <p className="text-xs opacity-80 mt-1 font-body">{card.subtitle}</p>
-                </div>
-                
-                {/* Content */}
-                <CardContent className="pt-4">
-                  <div className="flex items-start gap-2">
-                    <span className="text-lg">{card.icon}</span>
-                    <p className="text-sm font-body text-foreground leading-tight">{card.description}</p>
-                  </div>
-                  {card.status && (
-                    <Badge 
-                      variant={card.statusColor as any} 
-                      className="mt-3 text-xs"
-                    >
-                      {card.status}
-                    </Badge>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-
-            {/* New Page Card */}
-            <Card className="border-dashed border-2 border-border/50 bg-transparent hover:bg-muted/30 cursor-pointer transition-colors">
-              <CardContent className="h-full flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Plus className="w-8 h-8 mb-2" />
-                <span className="text-sm font-body">New page</span>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : notes.length === 0 ? (
+            <Card className="border-dashed border-2 border-border/50 bg-transparent">
+              <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <FileText className="w-12 h-12 mb-4 text-muted-foreground/50" />
+                <p className="text-center mb-4">No notes yet. Create your first note!</p>
+                <Button variant="outline" onClick={createNewNote}>
+                  <Plus className="w-4 h-4 mr-2" /> Create Note
+                </Button>
               </CardContent>
             </Card>
-          </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {notes.map((note) => (
+                <Card 
+                  key={note.id} 
+                  className="overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform group"
+                  onClick={() => handleNoteClick(note)}
+                >
+                  {/* Colored Header */}
+                  <div className={cn(
+                    "p-4 bg-gradient-to-br text-white relative",
+                    getCategoryColor(note.category)
+                  )}>
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={(e) => togglePin(note.id, note.is_pinned || false, e)}
+                        className="p-1 rounded hover:bg-white/20"
+                      >
+                        <Pin className={cn("w-4 h-4", note.is_pinned && "fill-current")} />
+                      </button>
+                      <button 
+                        onClick={(e) => handleDeleteNote(note.id, e)}
+                        className="p-1 rounded hover:bg-white/20"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2 mb-2 opacity-80">
+                      <Pyramid className="w-4 h-4" />
+                      <span className="text-xs font-body">aigypt</span>
+                      {note.is_pinned && <Pin className="w-3 h-3 fill-current" />}
+                    </div>
+                    <h3 className="font-display font-bold text-lg leading-tight line-clamp-2">{note.title}</h3>
+                    <p className="text-xs opacity-80 mt-1 font-body capitalize">{note.category || 'General'}</p>
+                  </div>
+                  
+                  {/* Content Preview */}
+                  <CardContent className="pt-4">
+                    <p className="text-sm font-body text-muted-foreground line-clamp-3">
+                      {note.content?.replace(/[#*\[\]]/g, '').substring(0, 100) || 'No content'}
+                    </p>
+                    <p className="text-xs text-muted-foreground/70 mt-2">
+                      {new Date(note.updated_at).toLocaleDateString()}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+
+              {/* New Note Card */}
+              <Card 
+                className="border-dashed border-2 border-border/50 bg-transparent hover:bg-muted/30 cursor-pointer transition-colors"
+                onClick={createNewNote}
+              >
+                <CardContent className="h-full flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Plus className="w-8 h-8 mb-2" />
+                  <span className="text-sm font-body">New note</span>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Note Detail Sheet */}
+      <NoteDetailSheet
+        note={selectedNote}
+        open={isDetailOpen}
+        onOpenChange={(open) => {
+          setIsDetailOpen(open);
+          if (!open) setSelectedNote(null);
+        }}
+        onEdit={() => {}}
+        onDelete={async (id) => {
+          await supabase.from('notes').delete().eq('id', id);
+          fetchNotes();
+          setIsDetailOpen(false);
+        }}
+        onTogglePin={async (note) => {
+          await supabase.from('notes').update({ is_pinned: !note.is_pinned }).eq('id', note.id);
+          fetchNotes();
+        }}
+      />
     </div>
   );
 };
