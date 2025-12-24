@@ -4,29 +4,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full border px-3 py-1 text-xs font-body font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-gradient-to-r from-primary to-emerald-500 text-primary-foreground shadow-sm",
-        secondary: "border-transparent bg-gradient-to-r from-secondary to-amber-400 text-secondary-foreground shadow-sm",
-        destructive: "border-transparent bg-gradient-to-r from-destructive to-red-500 text-white shadow-sm",
-        outline: "border-secondary/50 text-secondary bg-secondary/10",
-        success: "border-transparent bg-gradient-to-r from-success to-emerald-400 text-white shadow-sm",
-        accent: "border-transparent bg-gradient-to-r from-accent to-teal-400 text-accent-foreground shadow-sm",
-        pyro: "border-transparent bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-sm",
-        hydro: "border-transparent bg-gradient-to-r from-blue-400 to-cyan-500 text-white shadow-sm",
-        anemo: "border-transparent bg-gradient-to-r from-teal-400 to-emerald-500 text-white shadow-sm",
-        electro: "border-transparent bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-sm",
-        dendro: "border-transparent bg-gradient-to-r from-green-600 to-emerald-500 text-white shadow-sm",
-        geo: "border-transparent bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-800 shadow-sm",
-        cryo: "border-transparent bg-gradient-to-r from-cyan-300 to-blue-300 text-slate-700 shadow-sm",
+        default: "border-transparent bg-primary text-primary-foreground shadow-sm",
+        secondary: "border-transparent bg-secondary text-secondary-foreground shadow-sm",
+        destructive: "border-transparent bg-destructive text-destructive-foreground shadow-sm",
+        outline: "border-primary/40 text-foreground bg-background/80",
+        success: "border-transparent bg-success text-success-foreground shadow-sm",
+        // Adventure themed badges
+        jungle: "border-transparent bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-sm",
+        treasure: "border-transparent bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-sm",
+        ocean: "border-transparent bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-sm",
+        sunset: "border-transparent bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-sm",
+        earth: "border-transparent bg-gradient-to-r from-amber-600 to-amber-800 text-white shadow-sm",
+        sky: "border-transparent bg-gradient-to-r from-sky-400 to-blue-400 text-white shadow-sm",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {}
