@@ -4,8 +4,12 @@ import { Menu, X, ChevronLeft } from 'lucide-react';
 import {
   IconDashboard, IconTarget, IconFlame, IconBolt, IconTrophy,
   IconNote, IconBrain, IconWallet, IconInventory, IconMoon,
-  IconMusic, IconTimer, IconTicket, IconPyramid, IconProfile
+  IconMusic, IconTimer, IconProfile
 } from '@/components/icons/CleanIcons';
+
+// Import custom logos
+import temantiketLogo from '@/assets/temantiket-logo.png';
+import aigyptLogo from '@/assets/aigypt-logo.png';
 
 interface SidebarProps {
   activeTab: string;
@@ -47,8 +51,8 @@ const navSections = [
   {
     title: 'Spaces',
     items: [
-      { id: 'temantiket', label: 'Temantiket', Icon: IconTicket },
-      { id: 'aigypt', label: 'AIGYPT', Icon: IconPyramid },
+      { id: 'temantiket', label: 'Temantiket', customIcon: temantiketLogo },
+      { id: 'aigypt', label: 'AIGYPT', customIcon: aigyptLogo },
     ]
   },
   {
@@ -73,7 +77,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed top-4 left-4 z-50 lg:hidden p-2.5 rounded-lg bg-card border border-border text-foreground shadow-lg"
+        className="fixed top-3 left-3 z-50 lg:hidden p-2.5 rounded-lg bg-card/90 border border-primary/20 text-foreground shadow-lg backdrop-blur-sm"
       >
         {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
@@ -95,7 +99,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-5 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-[0_0_15px_hsl(210_100%_55%/0.3)]">
               <IconBolt className="w-5 h-5 text-white" size={20} />
             </div>
             <div>
@@ -114,7 +118,7 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         <nav className="flex-1 py-4 px-3 space-y-5 overflow-y-auto">
           {navSections.map((section) => (
             <div key={section.title}>
-              <p className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-wider text-primary/70">
                 {section.title}
               </p>
               <div className="space-y-0.5">
@@ -128,22 +132,33 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group",
                         isActive
-                          ? "bg-sidebar-accent text-sidebar-foreground"
+                          ? "bg-primary/15 text-sidebar-foreground border border-primary/20"
                           : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                       )}
                     >
-                      <item.Icon 
-                        className={cn(
-                          "transition-colors",
-                          isActive ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"
-                        )} 
-                        size={18} 
-                      />
+                      {'customIcon' in item && item.customIcon ? (
+                        <img 
+                          src={item.customIcon} 
+                          alt={item.label} 
+                          className={cn(
+                            "w-[18px] h-[18px] object-contain transition-all",
+                            isActive ? "opacity-100" : "opacity-70 group-hover:opacity-100"
+                          )}
+                        />
+                      ) : 'Icon' in item && item.Icon && (
+                        <item.Icon 
+                          className={cn(
+                            "transition-colors",
+                            isActive ? "text-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"
+                          )} 
+                          size={18} 
+                        />
+                      )}
                       <span className="font-body text-sm flex-1 text-left">
                         {item.label}
                       </span>
                       {isActive && (
-                        <div className="w-1.5 h-5 rounded-full bg-primary" />
+                        <div className="w-1.5 h-5 rounded-full bg-primary shadow-[0_0_10px_hsl(210_100%_55%/0.5)]" />
                       )}
                     </button>
                   );

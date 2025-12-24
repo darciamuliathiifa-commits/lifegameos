@@ -74,51 +74,12 @@ const quickMenuItems: QuickMenuItem[] = [
   { name: 'Health', Icon: IconHeart, category: 'health', defaultContent: '## Health Tracker\n\n### Daily Health Log\n- Sleep: hours\n- Water: glasses\n- Exercise: \n- Mood: \n\n### Notes\n- ' },
 ];
 
-const categoryCards = [
-  { 
-    id: 'daily', 
-    title: 'Daily', 
-    image: cardDaily,
-    items: [
-      { name: 'Planner', Icon: IconPlanner },
-      { name: 'Habits', Icon: IconHabits },
-      { name: 'Journal', Icon: IconJournal }
-    ],
-    tab: 'quests'
-  },
-  { 
-    id: 'planners', 
-    title: 'Planners', 
-    image: cardPlanners,
-    items: [
-      { name: 'Meal Planner', Icon: IconMeal },
-      { name: 'Travel Planner', Icon: IconTravel },
-      { name: 'Workout Planner', Icon: IconWorkout }
-    ],
-    tab: 'habits'
-  },
-  { 
-    id: 'personal', 
-    title: 'Personal', 
-    image: cardPersonal,
-    items: [
-      { name: 'Bookshelf', Icon: IconBook },
-      { name: 'Movies & Series', Icon: IconMovie },
-      { name: 'Finance', Icon: IconWallet }
-    ],
-    tab: 'finance'
-  },
-  { 
-    id: 'goals', 
-    title: 'Goals', 
-    image: cardGoals,
-    items: [
-      { name: 'Goals', Icon: IconTarget },
-      { name: 'Vision', Icon: IconVision },
-      { name: 'Health', Icon: IconHeart }
-    ],
-    tab: 'goals'
-  },
+// Quick Quest Categories for dashboard
+const quickQuestCategories = [
+  { id: 'health', label: 'Kesehatan', icon: '💪', color: 'from-emerald-500/20 to-green-600/20', xp: 25 },
+  { id: 'productivity', label: 'Produktivitas', icon: '⚡', color: 'from-blue-500/20 to-cyan-500/20', xp: 50 },
+  { id: 'learning', label: 'Pembelajaran', icon: '📚', color: 'from-purple-500/20 to-indigo-500/20', xp: 50 },
+  { id: 'creative', label: 'Kreativitas', icon: '🎨', color: 'from-amber-500/20 to-orange-500/20', xp: 25 },
 ];
 
 const overviewTabs = [
@@ -359,48 +320,30 @@ export const LifePlannerDashboard = ({
         </div>
       </div>
 
-      {/* Category Cards Grid */}
-      <div className="grid grid-cols-2 gap-3 md:gap-4 px-1 md:px-2">
-        {categoryCards.map((card, index) => (
-          <div
-            key={card.id}
-            className="space-y-2 md:space-y-3 animate-slide-up"
-            style={{ animationDelay: `${100 + index * 50}ms` }}
-          >
+      {/* Quick Quest Add Section */}
+      <div className="space-y-3 px-1 md:px-2 animate-slide-up" style={{ animationDelay: '100ms' }}>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-base md:text-lg text-foreground">Tambah Misi Cepat</h2>
+          <Button variant="ghost" size="sm" onClick={() => onNavigate('quests')} className="text-xs text-muted-foreground">
+            Lihat Semua →
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+          {quickQuestCategories.map((cat) => (
             <button
-              onClick={() => onNavigate(card.tab)}
-              className="relative w-full aspect-[4/3] rounded-lg md:rounded-xl overflow-hidden group"
+              key={cat.id}
+              onClick={() => onNavigate('quests')}
+              className={cn(
+                "p-3 md:p-4 rounded-lg md:rounded-xl border border-primary/20 bg-gradient-to-br transition-all hover:scale-[1.02] hover:border-primary/40",
+                cat.color
+              )}
             >
-              <img 
-                src={card.image} 
-                alt={card.title}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-              <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3">
-                <h3 className="text-white font-display font-semibold text-sm md:text-lg drop-shadow-lg">
-                  {card.title}
-                </h3>
-              </div>
+              <div className="text-2xl md:text-3xl mb-2">{cat.icon}</div>
+              <p className="text-xs md:text-sm font-display text-foreground">{cat.label}</p>
+              <p className="text-[10px] md:text-xs text-primary mt-1">+{cat.xp} XP</p>
             </button>
-            
-            <div className="space-y-0.5 hidden md:block">
-              {card.items.map((item) => (
-                <button
-                  key={item.name}
-                  onClick={() => handleQuickMenuClick(item.name)}
-                  disabled={isCreatingNote === item.name}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full text-left py-0.5 disabled:opacity-50"
-                >
-                  <item.Icon className="w-3.5 h-3.5 text-primary" size={14} />
-                  <span className="font-body">
-                    {isCreatingNote === item.name ? 'Creating...' : item.name}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Overview Section */}

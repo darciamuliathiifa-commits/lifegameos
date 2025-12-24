@@ -62,6 +62,7 @@ export type Database = {
           title: string
           type: string
           user_id: string
+          wallet_id: string | null
         }
         Insert: {
           amount: number
@@ -74,6 +75,7 @@ export type Database = {
           title: string
           type: string
           user_id: string
+          wallet_id?: string | null
         }
         Update: {
           amount?: number
@@ -86,8 +88,17 @@ export type Database = {
           title?: string
           type?: string
           user_id?: string
+          wallet_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "finance_transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       goals: {
         Row: {
@@ -452,6 +463,39 @@ export type Database = {
           longest_streak?: number
           quests_completed?: number
           total_xp_earned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          color: string | null
+          created_at: string
+          currency: string
+          icon: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          currency?: string
+          icon?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          currency?: string
+          icon?: string | null
+          id?: string
+          name?: string
           updated_at?: string
           user_id?: string
         }
