@@ -27,11 +27,11 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       {/* Logo */}
       <div className="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_20px_hsl(var(--primary)/0.5)]">
-            <Zap className="w-5 h-5 text-primary-foreground" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-amber-400 to-orange-500 flex items-center justify-center shadow-lg animate-pulse-glow">
+            <span className="text-xl">⚔️</span>
           </div>
-          <span className="hidden lg:block font-display text-base text-foreground tracking-wide">
-            LIFE<span className="text-primary">GAME</span>
+          <span className="hidden lg:block font-display text-lg text-sidebar-foreground tracking-wider">
+            Life<span className="text-primary">Game</span>
           </span>
         </div>
       </div>
