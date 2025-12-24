@@ -48,6 +48,7 @@ const DashboardPage = () => {
             onCompleteQuest={store.completeQuest}
             onCompleteHabit={store.completeHabit}
             onNavigate={setActiveTab}
+            onAddQuest={store.addQuest}
           />
         );
       case 'quests':

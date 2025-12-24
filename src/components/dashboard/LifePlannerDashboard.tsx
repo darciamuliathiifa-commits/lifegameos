@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Plus, ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Loader2 } from 'lucide-react';
+import { Plus, ChevronDown, ChevronLeft, ChevronRight, MoreHorizontal, Loader2, Check, X } from 'lucide-react';
 import { Quest, Habit, Goal, Stats, UserProfile } from '@/types/game';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
 import { PrayerTimesWidget } from '@/components/prayers/PrayerTimesWidget';
@@ -33,6 +35,7 @@ interface LifePlannerDashboardProps {
   onCompleteQuest: (id: string) => void;
   onCompleteHabit: (id: string) => void;
   onNavigate: (tab: string) => void;
+  onAddQuest?: (quest: { title: string; description?: string; xpReward: number; category: string; difficulty?: string }) => void;
 }
 
 interface FinanceTransaction {
@@ -119,6 +122,7 @@ export const LifePlannerDashboard = ({
   onCompleteQuest,
   onCompleteHabit,
   onNavigate,
+  onAddQuest,
 }: LifePlannerDashboardProps) => {
   const { user } = useAuth();
   const [activeOverviewTab, setActiveOverviewTab] = useState('Todo');
@@ -131,6 +135,33 @@ export const LifePlannerDashboard = ({
   const [isCreatingNote, setIsCreatingNote] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(['daily', 'side', 'urgent']);
   const [isCompactCalendar, setIsCompactCalendar] = useState(true);
+  
+  // Quick add quest state
+  const [isAddingQuest, setIsAddingQuest] = useState(false);
+  const [newQuestTitle, setNewQuestTitle] = useState('');
+  const [newQuestCategory, setNewQuestCategory] = useState('productivity');
+  const [newQuestDifficulty, setNewQuestDifficulty] = useState('medium');
+
+  const handleQuickAddQuest = () => {
+    if (!newQuestTitle.trim() || !onAddQuest) return;
+    
+    const xpRewards: Record<string, number> = {
+      'easy': 10,
+      'medium': 25,
+      'hard': 50,
+      'very_hard': 100
+    };
+    
+    onAddQuest({
+      title: newQuestTitle,
+      category: newQuestCategory,
+      difficulty: newQuestDifficulty,
+      xpReward: xpRewards[newQuestDifficulty] || 25,
+    });
+    
+    setNewQuestTitle('');
+    setIsAddingQuest(false);
+  };
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => 
@@ -344,19 +375,66 @@ export const LifePlannerDashboard = ({
             <h2 className="font-display text-base md:text-lg text-foreground">Quest</h2>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 hidden sm:flex">
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 hidden sm:flex" onClick={() => onNavigate('quests')}>
               <MoreHorizontal className="w-3 h-3" />
             </Button>
             <Button 
               variant="gaming" 
               size="sm" 
-              onClick={() => onNavigate('quests')} 
+              onClick={() => setIsAddingQuest(true)} 
               className="h-7 text-xs gap-1"
             >
-              <Plus className="w-3 h-3" /> New
+              <Plus className="w-3 h-3" /> Misi Baru
             </Button>
           </div>
         </div>
+
+        {/* Quick Add Quest Form */}
+        {isAddingQuest && (
+          <Card className="border-primary/30 bg-primary/5 p-3 space-y-3">
+            <Input
+              placeholder="Judul misi..."
+              value={newQuestTitle}
+              onChange={(e) => setNewQuestTitle(e.target.value)}
+              className="h-9 text-sm"
+              autoFocus
+              onKeyDown={(e) => e.key === 'Enter' && handleQuickAddQuest()}
+            />
+            <div className="flex gap-2 flex-wrap">
+              <Select value={newQuestCategory} onValueChange={setNewQuestCategory}>
+                <SelectTrigger className="h-8 text-xs w-28">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="health">🏃 Health</SelectItem>
+                  <SelectItem value="productivity">💼 Productivity</SelectItem>
+                  <SelectItem value="learning">📚 Learning</SelectItem>
+                  <SelectItem value="creative">🎨 Creative</SelectItem>
+                  <SelectItem value="social">👥 Social</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={newQuestDifficulty} onValueChange={setNewQuestDifficulty}>
+                <SelectTrigger className="h-8 text-xs w-28">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="easy">Easy (+10 XP)</SelectItem>
+                  <SelectItem value="medium">Medium (+25 XP)</SelectItem>
+                  <SelectItem value="hard">Hard (+50 XP)</SelectItem>
+                  <SelectItem value="very_hard">Very Hard (+100 XP)</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="flex gap-1 ml-auto">
+                <Button size="sm" variant="outline" className="h-8 w-8 p-0" onClick={() => setIsAddingQuest(false)}>
+                  <X className="w-4 h-4" />
+                </Button>
+                <Button size="sm" variant="gaming" className="h-8 px-3 gap-1" onClick={handleQuickAddQuest} disabled={!newQuestTitle.trim()}>
+                  <Check className="w-4 h-4" /> Tambah
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Filter Tabs */}
         <div className="flex items-center gap-2 text-xs overflow-x-auto pb-1 scrollbar-none">
