@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Wallet, Plus, TrendingUp, TrendingDown, DollarSign, Trash2, Edit2, Filter, Camera, Loader2, CreditCard, PiggyBank } from 'lucide-react';
+import { Wallet, Plus, TrendingUp, TrendingDown, DollarSign, Trash2, Edit2, Filter, Camera, Loader2, CreditCard, PiggyBank, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { FinanceCharts } from './FinanceCharts';
 
 interface Transaction {
   id: string;
@@ -71,8 +72,11 @@ export const FinancePage = () => {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isWalletDialogOpen, setIsWalletDialogOpen] = useState(false);
+  const [isEditWalletDialogOpen, setIsEditWalletDialogOpen] = useState(false);
   const [isReceiptDialogOpen, setIsReceiptDialogOpen] = useState(false);
+  const [isBalanceDialogOpen, setIsBalanceDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [editingWallet, setEditingWallet] = useState<WalletType | null>(null);
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [selectedWallet, setSelectedWallet] = useState<string>('all');
@@ -95,6 +99,11 @@ export const FinancePage = () => {
     currency: 'IDR',
     icon: '💳',
     color: '#1e3a5f',
+  });
+
+  const [balanceForm, setBalanceForm] = useState({
+    amount: '',
+    type: 'set' as 'set' | 'add' | 'subtract',
   });
 
   useEffect(() => {
@@ -171,17 +180,102 @@ export const FinancePage = () => {
   const handleWalletSubmit = async () => {
     if (!user || !walletForm.name.trim()) return;
 
-    const { error } = await supabase
-      .from('wallets')
-      .insert({ user_id: user.id, ...walletForm });
+    if (editingWallet) {
+      const { error } = await supabase
+        .from('wallets')
+        .update(walletForm)
+        .eq('id', editingWallet.id);
 
-    if (!error) {
-      toast.success('Dompet berhasil ditambahkan!');
-      fetchWallets();
-      setIsWalletDialogOpen(false);
-      setWalletForm({ name: '', currency: 'IDR', icon: '💳', color: '#1e3a5f' });
+      if (!error) {
+        toast.success('Dompet berhasil diperbarui!');
+        fetchWallets();
+        closeWalletDialog();
+      } else {
+        toast.error('Gagal memperbarui dompet');
+      }
     } else {
-      toast.error('Gagal menambahkan dompet');
+      const { error } = await supabase
+        .from('wallets')
+        .insert({ user_id: user.id, ...walletForm });
+
+      if (!error) {
+        toast.success('Dompet berhasil ditambahkan!');
+        fetchWallets();
+        closeWalletDialog();
+      } else {
+        toast.error('Gagal menambahkan dompet');
+      }
+    }
+  };
+
+  const closeWalletDialog = () => {
+    setIsWalletDialogOpen(false);
+    setIsEditWalletDialogOpen(false);
+    setEditingWallet(null);
+    setWalletForm({ name: '', currency: 'IDR', icon: '💳', color: '#1e3a5f' });
+  };
+
+  const openEditWallet = (wallet: WalletType) => {
+    setEditingWallet(wallet);
+    setWalletForm({
+      name: wallet.name,
+      currency: wallet.currency,
+      icon: wallet.icon,
+      color: wallet.color,
+    });
+    setIsEditWalletDialogOpen(true);
+  };
+
+  const openBalanceDialog = (wallet: WalletType) => {
+    setEditingWallet(wallet);
+    setBalanceForm({ amount: '', type: 'set' });
+    setIsBalanceDialogOpen(true);
+  };
+
+  const handleBalanceSubmit = async () => {
+    if (!user || !editingWallet || !balanceForm.amount) return;
+
+    const amount = parseFloat(balanceForm.amount);
+    const currentBalance = getWalletBalance(editingWallet.id);
+    let adjustmentAmount = 0;
+    let adjustmentType: 'income' | 'expense' = 'income';
+
+    if (balanceForm.type === 'set') {
+      adjustmentAmount = Math.abs(amount - currentBalance);
+      adjustmentType = amount >= currentBalance ? 'income' : 'expense';
+    } else if (balanceForm.type === 'add') {
+      adjustmentAmount = amount;
+      adjustmentType = 'income';
+    } else {
+      adjustmentAmount = amount;
+      adjustmentType = 'expense';
+    }
+
+    if (adjustmentAmount > 0) {
+      const { error } = await supabase
+        .from('finance_transactions')
+        .insert({
+          user_id: user.id,
+          title: balanceForm.type === 'set' ? 'Penyesuaian Saldo' : (balanceForm.type === 'add' ? 'Penambahan Saldo' : 'Pengurangan Saldo'),
+          amount: adjustmentAmount,
+          type: adjustmentType,
+          category: 'other',
+          date: new Date().toISOString().split('T')[0],
+          currency: editingWallet.currency,
+          wallet_id: editingWallet.id,
+        });
+
+      if (!error) {
+        toast.success('Saldo berhasil diperbarui!');
+        fetchTransactions();
+        setIsBalanceDialogOpen(false);
+        setEditingWallet(null);
+      } else {
+        toast.error('Gagal memperbarui saldo');
+      }
+    } else {
+      toast.info('Saldo sudah sesuai');
+      setIsBalanceDialogOpen(false);
     }
   };
 
@@ -510,6 +604,91 @@ export const FinancePage = () => {
         </div>
       </div>
 
+      {/* Edit Wallet Dialog */}
+      <Dialog open={isEditWalletDialogOpen} onOpenChange={(open) => {
+        if (!open) closeWalletDialog();
+        else setIsEditWalletDialogOpen(true);
+      }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Dompet</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <Input
+              placeholder="Nama dompet"
+              value={walletForm.name}
+              onChange={(e) => setWalletForm({ ...walletForm, name: e.target.value })}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <Select value={walletForm.currency} onValueChange={(v) => setWalletForm({ ...walletForm, currency: v })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Mata uang" />
+                </SelectTrigger>
+                <SelectContent>
+                  {currencies.map(c => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.symbol} {c.code}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={walletForm.icon} onValueChange={(v) => setWalletForm({ ...walletForm, icon: v })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Ikon" />
+                </SelectTrigger>
+                <SelectContent>
+                  {walletIcons.map(icon => (
+                    <SelectItem key={icon} value={icon}>
+                      {icon}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={closeWalletDialog} className="flex-1">Batal</Button>
+              <Button variant="gaming" onClick={handleWalletSubmit} className="flex-1">Simpan</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Balance Adjustment Dialog */}
+      <Dialog open={isBalanceDialogOpen} onOpenChange={setIsBalanceDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Atur Saldo - {editingWallet?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            {editingWallet && (
+              <p className="text-sm text-muted-foreground">
+                Saldo saat ini: <span className="font-bold text-foreground">{formatAmount(getWalletBalance(editingWallet.id), editingWallet.currency)}</span>
+              </p>
+            )}
+            <Select value={balanceForm.type} onValueChange={(v: 'set' | 'add' | 'subtract') => setBalanceForm({ ...balanceForm, type: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="set">📊 Atur Saldo Ke</SelectItem>
+                <SelectItem value="add">➕ Tambah Saldo</SelectItem>
+                <SelectItem value="subtract">➖ Kurangi Saldo</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              type="number"
+              placeholder="Jumlah"
+              value={balanceForm.amount}
+              onChange={(e) => setBalanceForm({ ...balanceForm, amount: e.target.value })}
+            />
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setIsBalanceDialogOpen(false)} className="flex-1">Batal</Button>
+              <Button variant="gaming" onClick={handleBalanceSubmit} className="flex-1">Simpan</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Wallets Grid */}
       {wallets.length > 0 && (
         <div className="space-y-3">
@@ -531,12 +710,29 @@ export const FinancePage = () => {
                   <CardContent className="p-3 md:p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xl md:text-2xl">{wallet.icon}</span>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); deleteWallet(wallet.id); }}
-                        className="p-1 text-muted-foreground hover:text-destructive transition-colors"
-                      >
-                        <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
-                      </button>
+                      <div className="flex gap-1">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); openBalanceDialog(wallet); }}
+                          className="p-1 text-muted-foreground hover:text-primary transition-colors"
+                          title="Atur Saldo"
+                        >
+                          <DollarSign className="w-3 h-3 md:w-4 md:h-4" />
+                        </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); openEditWallet(wallet); }}
+                          className="p-1 text-muted-foreground hover:text-primary transition-colors"
+                          title="Edit"
+                        >
+                          <Edit2 className="w-3 h-3 md:w-4 md:h-4" />
+                        </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); deleteWallet(wallet.id); }}
+                          className="p-1 text-muted-foreground hover:text-destructive transition-colors"
+                          title="Hapus"
+                        >
+                          <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
+                        </button>
+                      </div>
                     </div>
                     <p className="text-xs md:text-sm text-muted-foreground truncate">{wallet.name}</p>
                     <p className={cn(
@@ -679,6 +875,11 @@ export const FinancePage = () => {
           </div>
         )}
       </div>
+
+      {/* Charts Section */}
+      {transactions.length > 0 && (
+        <FinanceCharts transactions={transactions} />
+      )}
     </div>
   );
 };
